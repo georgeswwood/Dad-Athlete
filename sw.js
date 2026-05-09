@@ -1,10 +1,10 @@
-const CACHE = 'da23-v2';
+const CACHE = 'da23-v3';
 const ASSETS = [
-  './',
-  './index.html',
-  './manifest.json',
-  './icon-192.png',
-  './icon-512.png'
+  '/Dad-Athlete/',
+  '/Dad-Athlete/index.html',
+  '/Dad-Athlete/manifest.json',
+  '/Dad-Athlete/icon-192.png',
+  '/Dad-Athlete/icon-512.png'
 ];
 
 self.addEventListener('install', e => {
