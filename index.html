@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Dad Athlete">
+<link rel="manifest" href="manifest.json">
+<title>Dad Athlete V2.5.2</title>
+<style>
+:root{--bg:#0f0f0f;--surf:#181818;--bdr:#252525;--acc:#d94f00;--acc-dim:rgba(217,79,0,.12);--acc-bdr:rgba(217,79,0,.3);--txt:#f0ede8;--muted:#555;--muted2:#888;--green:#2e7d32;--gdim:rgba(46,125,50,.15);--gbdr:rgba(46,125,50,.4);--blue-dim:rgba(21,101,192,.15);--blue-bdr:rgba(21,101,192,.4)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:16px;line-height:1.4;min-height:100vh;overscroll-behavior:none}
+.hdr{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--bdr)}
+.hdr-top{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 8px}
+.hdr-title{font-size:14px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--acc)}
+.hdr-v{font-size:11px;color:var(--muted);letter-spacing:.06em}
+.tab-nav{display:flex;overflow-x:auto;padding:0 16px;scrollbar-width:none;gap:2px}
+.tab-nav::-webkit-scrollbar{display:none}
+.tab-btn{background:none;border:none;border-bottom:2px solid transparent;color:var(--muted);cursor:pointer;font-size:11px;font-weight:700;letter-spacing:.06em;padding:8px 10px 8px 0;text-transform:uppercase;transition:color .2s,border-color .2s;white-space:nowrap}
+.tab-btn.active{border-bottom-color:var(--acc);color:var(--txt)}
+.day-nav{display:flex;gap:8px;overflow-x:auto;padding:14px 16px 0;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.day-nav::-webkit-scrollbar{display:none}
+.day-pill{background:var(--surf);border:1px solid var(--bdr);border-radius:20px;color:var(--muted2);cursor:pointer;font-size:12px;font-weight:700;padding:7px 14px;transition:all .2s;white-space:nowrap;-webkit-user-select:none}
+.day-pill.active{background:var(--acc);border-color:var(--acc);color:#fff}
+.content{padding:16px}
+.tab-pane{display:none}
+.tab-pane.show{display:block}
+.dl-banner{background:var(--blue-dim);border:1px solid var(--blue-bdr);border-radius:10px;margin-bottom:16px;padding:12px 14px}
+.dl-banner-title{color:#5c9eff;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
+.dl-banner-body{color:var(--muted2);font-size:12px;line-height:1.6}
+.dl-banner-body strong{color:#5c9eff}
+.day-hdr{margin-bottom:20px}
+.day-name{font-size:22px;font-weight:800;letter-spacing:-.02em;margin-bottom:3px}
+.day-sub{color:var(--muted2);font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+.day-date{color:var(--muted);font-size:12px;margin-top:6px}
+.day-last{color:var(--acc);font-size:12px;margin-top:3px}
+.week-chip{display:inline-block;background:var(--surf);border:1px solid var(--bdr);border-radius:10px;color:var(--muted2);font-size:10px;font-weight:700;letter-spacing:.06em;margin-top:6px;padding:3px 8px;text-transform:uppercase}
+.sec-hdr{border-bottom:1px solid var(--bdr);color:var(--acc);font-size:10px;font-weight:800;letter-spacing:.1em;margin:20px 0 10px;padding-bottom:6px;text-transform:uppercase}
+.icard{background:var(--acc-dim);border:1px solid var(--acc-bdr);border-radius:10px;margin-bottom:10px;padding:12px 14px}
+.icard-title{color:var(--acc);font-size:11px;font-weight:800;letter-spacing:.08em;margin-bottom:4px;text-transform:uppercase}
+.icard-body{color:var(--muted2);font-size:12px;line-height:1.6}
+.icard-body strong{color:var(--txt)}
+.icard-green{background:var(--gdim);border:1px solid var(--gbdr);border-radius:10px;margin-bottom:10px;padding:12px 14px}
+.icard-green-title{color:#66bb6a;font-size:11px;font-weight:800;letter-spacing:.08em;margin-bottom:4px;text-transform:uppercase}
+.icard-green-body{color:var(--muted2);font-size:12px;line-height:1.6}
+.icard-green-body strong{color:var(--txt)}
+.ex-card{background:var(--surf);border:1px solid var(--bdr);border-radius:10px;margin-bottom:10px;overflow:hidden}
+.ex-top{padding:12px 14px 8px}
+.ex-name-row{display:flex;align-items:center;gap:8px;margin-bottom:3px;flex-wrap:wrap}
+.ex-name{font-size:15px;font-weight:700}
+.ov-badge{background:var(--gdim);border:1px solid var(--gbdr);border-radius:6px;color:#66bb6a;font-size:9px;font-weight:800;letter-spacing:.06em;padding:2px 6px;text-transform:uppercase;white-space:nowrap}
+.ex-meta{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.ex-sets-lbl{color:var(--muted2);font-size:11px}
+.ex-note{color:var(--muted);font-size:11px;font-style:italic}
+.ex-last{border-bottom:1px solid var(--bdr);color:var(--muted);font-size:11px;padding:0 14px 8px}
+.ex-last strong{color:var(--muted2);font-weight:600}
+.set-rows{padding:8px 14px}
+.set-row{align-items:center;display:flex;gap:8px;padding:5px 0}
+.set-lbl{color:var(--muted);flex-shrink:0;font-size:11px;font-weight:700;width:22px}
+.s-inp{background:var(--bg);border:1px solid var(--bdr);border-radius:6px;color:var(--txt);font-size:15px;font-weight:600;padding:9px 6px;text-align:center;width:62px;-moz-appearance:textfield}
+.s-inp::-webkit-outer-spin-button,.s-inp::-webkit-inner-spin-button{-webkit-appearance:none}
+.s-inp:focus{border-color:var(--acc);outline:none}
+.s-inp.wide{width:52px}
+.s-sep{color:var(--muted);font-size:13px;flex-shrink:0}
+.s-unit{color:var(--muted);font-size:11px;flex-shrink:0}
+.s-done{align-items:center;background:none;border:2px solid var(--bdr);border-radius:50%;cursor:pointer;display:flex;flex-shrink:0;height:30px;justify-content:center;margin-left:auto;transition:all .15s;width:30px}
+.s-done.on{background:var(--green);border-color:var(--green)}
+.s-done.on::after{content:'✓';color:#fff;font-size:12px;font-weight:800}
+.hist-entry{background:var(--surf);border:1px solid var(--bdr);border-radius:10px;margin-bottom:10px;overflow:hidden}
+.hist-hdr{align-items:center;display:flex;justify-content:space-between;padding:12px 14px}
+.hist-day{font-size:14px;font-weight:700}
+.hist-date{color:var(--muted2);font-size:11px}
+.hist-exes{border-top:1px solid var(--bdr);padding:2px 14px 10px}
+.hist-ex{border-bottom:1px solid var(--bdr);display:flex;font-size:13px;justify-content:space-between;padding:7px 0}
+.hist-ex:last-child{border-bottom:none}
+.hist-ex-name{color:var(--muted2);flex:1;padding-right:8px}
+.hist-ex-data{color:var(--txt);font-weight:600;text-align:right}
+.bench-card{background:var(--surf);border:1px solid var(--bdr);border-radius:10px;margin-bottom:12px;overflow:hidden}
+.bench-top{padding:14px 14px 10px}
+.bench-name{font-size:16px;font-weight:700;margin-bottom:3px}
+.bench-target{color:var(--muted2);font-size:11px;margin-bottom:10px}
+.bench-big{display:flex;align-items:baseline;gap:6px}
+.bench-big-kg{color:var(--acc);font-size:30px;font-weight:800;letter-spacing:-.02em}
+.bench-big-lbl{color:var(--muted2);font-size:13px}
+.bench-big-date{color:var(--muted);font-size:11px;margin-top:2px}
+.bench-log-btn{background:var(--acc);border:none;border-radius:8px;color:#fff;cursor:pointer;font-size:13px;font-weight:700;margin:10px 14px 14px;padding:10px;text-align:center;width:calc(100% - 28px);display:block}
+.bench-form{background:var(--bg);border-top:1px solid var(--bdr);padding:14px;display:none}
+.bench-form.open{display:block}
+.bench-form-lbl{color:var(--muted2);font-size:11px;font-weight:700;letter-spacing:.06em;margin-bottom:6px;text-transform:uppercase}
+.bench-form-inp{background:var(--surf);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);font-size:26px;font-weight:700;margin-bottom:10px;padding:10px 14px;text-align:center;width:100%;-moz-appearance:textfield}
+.bench-form-inp::-webkit-outer-spin-button,.bench-form-inp::-webkit-inner-spin-button{-webkit-appearance:none}
+.bench-form-inp:focus{border-color:var(--acc);outline:none}
+.bench-save-btn{background:var(--acc);border:none;border-radius:8px;color:#fff;cursor:pointer;font-size:14px;font-weight:700;padding:12px;width:100%}
+.bench-hist{border-top:1px solid var(--bdr);padding:0 14px 6px}
+.bench-hist-row{align-items:center;border-bottom:1px solid var(--bdr);display:flex;justify-content:space-between;padding:7px 0}
+.bench-hist-row:last-child{border-bottom:none}
+.bench-hist-kg{color:var(--txt);font-size:14px;font-weight:700}
+.bench-hist-date{color:var(--muted2);font-size:11px}
+.bench-diff{font-size:11px;font-weight:700}
+.bench-diff.up{color:#66bb6a}
+.bench-diff.same{color:var(--muted)}
+.proto-card{background:var(--surf);border:1px solid var(--bdr);border-radius:10px;margin-bottom:12px;padding:16px}
+.proto-title{color:var(--acc);font-size:11px;font-weight:800;letter-spacing:.08em;margin-bottom:8px;text-transform:uppercase}
+.proto-rule{font-size:15px;font-weight:700;margin-bottom:8px;line-height:1.4}
+.proto-body{color:var(--muted2);font-size:13px;line-height:1.7}
+.proto-body strong{color:var(--txt)}
+.week-dots{display:flex;flex-wrap:wrap;gap:5px;margin-top:14px}
+.wdot{align-items:center;border-radius:7px;display:flex;flex-direction:column;font-size:9px;font-weight:800;gap:2px;justify-content:center;padding:7px 4px;min-width:38px}
+.wdot.past{background:var(--gdim);border:1px solid var(--gbdr);color:#66bb6a}
+.wdot.now{background:var(--acc);border:1px solid var(--acc);color:#fff}
+.wdot.dl{background:var(--blue-dim);border:1px solid var(--blue-bdr);color:#5c9eff}
+.wdot.future{background:var(--bg);border:1px solid var(--bdr);color:var(--muted)}
+.wdot-sub{font-size:7px;opacity:.8;font-weight:600}
+.reset-btn{background:var(--surf);border:1px solid var(--bdr);border-radius:8px;color:var(--muted2);cursor:pointer;font-size:13px;font-weight:600;margin-top:12px;padding:10px 14px;width:100%}
+.mob-intro{color:var(--muted2);font-size:13px;line-height:1.7;margin-bottom:16px}
+.mob-card{align-items:center;background:var(--surf);border:1px solid var(--bdr);border-radius:10px;display:flex;gap:12px;margin-bottom:10px;padding:14px}
+.mob-num{color:var(--acc);flex-shrink:0;font-size:18px;font-weight:800;width:26px}
+.mob-name{font-size:15px;font-weight:700;margin-bottom:2px}
+.mob-detail{color:var(--muted2);font-size:12px}
+.mob-dur{color:var(--acc);flex-shrink:0;font-size:12px;font-weight:700;margin-left:auto}
+.empty{color:var(--muted);font-size:14px;padding:50px 20px;text-align:center;line-height:1.8}
+.spacer{height:40px}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-top">
+    <span class="hdr-title">Dad Athlete</span>
+    <span class="hdr-v">V2.5.2</span>
+  </div>
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="setTab('prog')">Train</button>
+    <button class="tab-btn" onclick="setTab('hist')">History</button>
+    <button class="tab-btn" onclick="setTab('bench')">Benchmarks</button>
+    <button class="tab-btn" onclick="setTab('proto')">Protocol</button>
+    <button class="tab-btn" onclick="setTab('mob')">Mobility</button>
+  </div>
+</div>
+
+<div id="tab-prog" class="tab-pane show">
+  <div class="day-nav" id="dayNav"></div>
+  <div class="content" id="dayContent"></div>
+</div>
+<div id="tab-hist" class="tab-pane content"></div>
+<div id="tab-bench" class="tab-pane content"></div>
+<div id="tab-proto" class="tab-pane content"></div>
+<div id="tab-mob" class="tab-pane content"></div>
+
+<script>
+// ─── Data ────────────────────────────────────────────────────────
+const HANG_OPENER={title:'Session Opener',ex:[
+  {id:'dead_hang',name:'Passive Dead Hang',sets:2,reps:'30–60 sec',note:'Shoulders passive — let them rise. Decompress the spine.',timed:true},
+]};
+
+const CORE_A={title:'Core Finisher',ex:[
+  {id:'dead_bug',  name:'Dead Bug',            sets:3,reps:'8 ea',  note:'Lower back flat. Opposite arm and leg. Slow.'},
+  {id:'pallof',    name:'Pallof Press (band)',  sets:3,reps:'10 ea', note:'Anti-rotation. Stand tall. Control the press.'},
+  {id:'hang_lr',   name:'Hanging Leg Raise',   sets:3,reps:'8–12',  note:'Control the swing. Tuck to straight leg progression.'},
+]};
+
+const CORE_B={title:'Core Finisher',ex:[
+  {id:'hollow',    name:'Hollow Body Hold',            sets:3,reps:'20–30 sec', note:'Arms overhead or by sides. Lower back flat.',timed:true},
+  {id:'cph_plank', name:'Copenhagen Plank',            sets:3,reps:'20 sec ea', note:'Bench as support. Hips level. Both sides.',timed:true},
+  {id:'hang_tuck', name:'Hanging Tuck / L-Sit Hold',  sets:3,reps:'10–20 sec', note:'Progress tuck → L-sit over weeks.',timed:true},
+]};
+
+const P=[
+  {id:'d1',lbl:'Day 1',name:'Upper Strength A',sub:'Push · Pull · Shoulders · Core',sections:[
+    HANG_OPENER,
+    {ex:[
+      {id:'inc_press', name:'Incline Barbell Press',       sets:4,reps:'6–8',   note:'Primary lift — never skip'},
+      {id:'wtd_pu',    name:'Weighted Pull-Up',            sets:4,reps:'5–8',   note:'Add weight before reps'},
+      {id:'strict_pr', name:'Strict Press',                sets:3,reps:'5–8',   note:'Baseline Benchmark ★'},
+      {id:'bent_row',  name:'Bent-Over Barbell Row',       sets:3,reps:'8–10',  note:''},
+      {id:'lat_raise', name:'Lateral Raise',               sets:4,reps:'12–15', note:'Slow eccentric — control the drop'},
+      {id:'face_pull', name:'Face Pull / Band Pull-Apart', sets:4,reps:'15–20', note:'Shoulder health — never skip'},
+    ]},
+    CORE_A,
+  ]},
+  {id:'d2',lbl:'Day 2',name:'Power + Lower A',sub:'Power · Squat · Lactate',sections:[
+    HANG_OPENER,
+    {title:'Power Block — 15 min (CNS fresh — do this first)',ex:[
+      {id:'box_jump',name:'Box Jump / Broad Jump',sets:5,reps:'3–5',note:'Full reset between sets. Maximum intent every rep.'},
+    ]},
+    {title:'Strength',ex:[
+      {id:'front_sq',name:'Front Squat',            sets:4,reps:'4–6',    note:'Baseline Benchmark ★'},
+      {id:'rdl',     name:'Romanian Deadlift',      sets:3,reps:'8–10',   note:''},
+      {id:'bulg',    name:'Bulgarian Split Squat',  sets:3,reps:'8–10 ea',note:'3 sec lower, pause at bottom — DBs'},
+      {id:'nordic',  name:'Nordic / Hamstring Curl',sets:3,reps:'8–10',   note:''},
+    ]},
+    {title:'Lactate Threshold — Fortnightly',
+     info:'Every 2 weeks, finish with 4 rounds of 4 min hard / 4 min easy. Hard = cannot hold a conversation. Alternates with off-day Zone 2. Trains the top end the base alone never touches.',
+     ex:[{id:'lact',name:'Lactate Intervals',sets:4,reps:'4 min',note:'Fortnightly — alternates with Zone 2 off-day',lactate:true}]},
+  ]},
+  {id:'d3',lbl:'Day 3',name:'Upper Strength B',sub:'Press · Pull · Volume · Core',sections:[
+    HANG_OPENER,
+    {ex:[
+      {id:'cg_inc',      name:'Close-Grip Barbell Incline Press',sets:4,reps:'6–8',   note:'Hands shoulder-width — upper chest + triceps'},
+      {id:'wtd_pu_b',    name:'Weighted Pull-Up (neutral grip)',  sets:4,reps:'6–8',   note:'Vary grip from Day 1'},
+      {id:'inv_row',     name:'Inverted Row',                     sets:3,reps:'10–12', note:'Feet elevated to increase load. Plate on chest when easy.'},
+      {id:'lat_raise_b', name:'Lateral Raise',                    sets:4,reps:'12–15', note:'8 sets total across the week with Day 1'},
+      {id:'wtd_dip',     name:'Weighted Dip',                     sets:3,reps:'8–10',  note:''},
+      {id:'curl_bar',    name:'Barbell / DB Curl',                sets:3,reps:'10–12', note:''},
+      {id:'curl_ham',    name:'Hammer Curl',                      sets:3,reps:'10–12', note:'Supinated peak, controlled lower'},
+    ]},
+    CORE_B,
+  ]},
+  {id:'d4',lbl:'Day 4',name:'Lower B + Carry',sub:'Hinge · Squat · Carry',sections:[
+    HANG_OPENER,
+    {title:'Strength',ex:[
+      {id:'deadlift',name:'Deadlift',   sets:4,reps:'4–6',   note:'Baseline Benchmark ★'},
+      {id:'back_sq', name:'Back Squat', sets:3,reps:'6–8',   note:''},
+      {id:'leg_pr',  name:'Leg Press',  sets:3,reps:'10–12', note:''},
+      {id:'hip_thr', name:'Hip Thrust', sets:3,reps:'10–12', note:''},
+    ]},
+    {title:'Loaded Carry — session finisher',ex:[
+      {id:'farmer',name:'Farmer Carry',sets:4,reps:'30m',note:'Heavy. DBs or trap bar. Grip and go.',carry:true},
+    ]},
+  ]},
+];
+
+const BENCH_LIFTS=[
+  {id:'sp',name:'Strict Press',    target:'Bodyweight (75kg+)'},
+  {id:'fs',name:'Front Squat',     target:'1.5× Bodyweight (~115kg)'},
+  {id:'dl',name:'Deadlift',        target:'2× Bodyweight (~150kg+)'},
+  {id:'pu',name:'Weighted Pull-Up',target:'50% Bodyweight added'},
+];
+
+const MOB=[
+  {name:'Passive Dead Hang',          detail:'2 × 30–60 sec. Shoulders passive — let them rise. Spinal decompression + shoulder capsule.',dur:'2 min'},
+  {name:'Couch Stretch',              detail:'Each side. Hip flexors — highest priority gap for desk workers and drivers.',                  dur:'2 min'},
+  {name:'Hip 90/90',                  detail:'Both sides. Breathe into the stretch. Hip IR/ER and joint longevity.',                       dur:'2 min'},
+  {name:'Thoracic Rotation',          detail:'In quadruped. Both sides. Most critical mobility deficit in adults.',                        dur:'2 min'},
+  {name:'Shoulder CARs',              detail:'Controlled articular rotation. Both arms. Full glenohumeral health.',                        dur:'2 min'},
+  {name:'Wall Ankle Dorsiflexion',    detail:'10 slow reps each side. Drives squat depth, knee tracking, lower limb longevity.',           dur:'1 min'},
+  {name:"World's Greatest Stretch",   detail:'Both sides. Hip flexors, adductors, thoracic — most efficient multi-joint movement.',        dur:'2 min'},
+];
+
+// ─── Storage ─────────────────────────────────────────────────────
+const WKEY='da241',BKEY='da25b',SKEY='da25s';
+function load(){try{return JSON.parse(localStorage.getItem(WKEY))||{};}catch{return {};}}
+function save(d){localStorage.setItem(WKEY,JSON.stringify(d));}
+function loadB(){try{return JSON.parse(localStorage.getItem(BKEY))||{};}catch{return {};}}
+function saveB(d){localStorage.setItem(BKEY,JSON.stringify(d));}
+function today(){const d=new Date();return`${d.getFullYear()}-${S(d.getMonth()+1)}-${S(d.getDate())}`;}
+function S(n){return String(n).padStart(2,'0');}
+function fmt(s){return new Date(s+'T12:00:00').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});}
+function fmtLong(s){return new Date(s+'T12:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});}
+function fmtShort(s){return new Date(s+'T12:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'2-digit'});}
+
+// ─── Week / Deload ────────────────────────────────────────────────
+function getStart(){let s=localStorage.getItem(SKEY);if(!s){s=today();localStorage.setItem(SKEY,s);}return s;}
+function currentWeek(){const ms=new Date()-new Date(getStart()+'T12:00:00');return Math.max(1,Math.floor(ms/(7*864e5))+1);}
+function isDeload(){return currentWeek()%5===0;}
+
+// ─── Progressive Overload ─────────────────────────────────────────
+function parseMax(r){const m=r.match(/(\d+)[–\-](\d+)/);return m?parseInt(m[2]):null;}
+function shouldAdd(dayId,exId,repsStr){
+  const max=parseMax(repsStr);if(!max)return false;
+  const all=load(),day=all[dayId]||{},t=today();
+  const dates=Object.keys(day).filter(d=>d!==t).sort().reverse().slice(0,2);
+  if(dates.length<2)return false;
+  return dates.every(date=>{
+    const ex=day[date]?.[exId];
+    if(!ex||!ex.length)return false;
+    const filled=ex.filter(s=>s.r!==''&&s.r!=null);
+    return filled.length&&filled.every(s=>parseInt(s.r)>=max);
+  });
+}
+
+// ─── Session helpers ──────────────────────────────────────────────
+function lastSess(dayId){
+  const all=load(),day=all[dayId]||{},t=today();
+  const dates=Object.keys(day).filter(d=>d!==t).sort().reverse();
+  return dates.length?{date:dates[0],data:day[dates[0]]}:null;
+}
+function getDraft(dayId){const all=load();return(all[dayId]||{})[today()]||null;}
+function writeDraft(dayId,exId,si,field,val){
+  const all=load();
+  if(!all[dayId])all[dayId]={};
+  if(!all[dayId][today()])all[dayId][today()]={};
+  const sess=all[dayId][today()];
+  if(!sess[exId])sess[exId]=[];
+  while(sess[exId].length<=si)sess[exId].push({w:'',r:'',done:false});
+  sess[exId][si][field]=val;
+  save(all);
+}
+
+// ─── State ────────────────────────────────────────────────────────
+let activeDay=0,openBench={};
+
+// ─── Tabs ─────────────────────────────────────────────────────────
+function setTab(t){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelector(`[onclick="setTab('${t}')"]`).classList.add('active');
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('show'));
+  document.getElementById('tab-'+t).classList.add('show');
+  if(t==='hist')renderHist();
+  if(t==='bench')renderBench();
+  if(t==='proto')renderProto();
+  if(t==='mob')renderMob();
+}
+
+// ─── Day nav ──────────────────────────────────────────────────────
+function renderNav(){
+  document.getElementById('dayNav').innerHTML=P.map((d,i)=>
+    `<button class="day-pill${i===activeDay?' active':''}" onclick="setDay(${i})">${d.lbl}</button>`
+  ).join('');
+}
+function setDay(i){activeDay=i;renderNav();renderDay();}
+
+// ─── Render exercise ──────────────────────────────────────────────
+function renderEx(ex,dayId,last,draft){
+  const lEx=last?.data?.[ex.id],dEx=draft?.[ex.id];
+  const isTimed=!!ex.timed,isLactate=!!ex.lactate,isCarry=!!ex.carry;
+  const isTimeType=isTimed||isLactate;
+  const addW=(!isTimeType&&!isCarry)?shouldAdd(dayId,ex.id,ex.reps):false;
+
+  let lastStr='';
+  if(lEx&&lEx.length){
+    const f=lEx.filter(s=>s.w!==''||s.r!=='');
+    if(f.length){
+      if(isLactate)lastStr=`Last ${fmt(last.date)}: ${f[0].r||'–'} rds`;
+      else if(isTimed)lastStr=`Last ${fmt(last.date)}: `+f.map(s=>s.r?s.r+'s':'–').join(' · ');
+      else if(isCarry)lastStr=`Last ${fmt(last.date)}: `+f.map(s=>s.w?s.w+'kg':'–').join(' · ');
+      else lastStr=`Last ${fmt(last.date)}: `+f.map(s=>`${s.w||'–'}×${s.r||'–'}`).join('  ');
+    }
+  }
+
+  let h=`<div class="ex-card"><div class="ex-top">`;
+  h+=`<div class="ex-name-row"><div class="ex-name">${ex.name}</div>`;
+  if(addW)h+=`<div class="ov-badge">↑ Add 2.5kg</div>`;
+  h+=`</div><div class="ex-meta"><span class="ex-sets-lbl">${ex.sets} × ${ex.reps}</span>`;
+  if(ex.note)h+=`<span class="ex-note">${ex.note}</span>`;
+  h+=`</div></div>`;
+  if(lastStr)h+=`<div class="ex-last"><strong>${lastStr}</strong></div>`;
+
+  if(isLactate){
+    const v=dEx?.[0]?.r??'',dn=dEx?.[0]?.done??false;
+    h+=`<div class="set-rows"><div class="set-row"><span class="set-lbl" style="width:auto;margin-right:4px">Rounds</span>
+      <input class="s-inp" type="number" inputmode="numeric" placeholder="${lEx?.[0]?.r||'4'}" value="${v}" onchange="writeDraft('${dayId}','${ex.id}',0,'r',this.value)">
+      <span class="s-unit">rds</span>
+      <button class="s-done${dn?' on':''}" onclick="toggleDone('${dayId}','${ex.id}',0,this)"></button>
+    </div></div>`;
+  } else if(isTimed){
+    h+=`<div class="set-rows">`;
+    for(let i=0;i<ex.sets;i++){
+      const v=dEx?.[i]?.r??'',dn=dEx?.[i]?.done??false,ph=lEx?.[i]?.r||'30';
+      h+=`<div class="set-row"><span class="set-lbl">S${i+1}</span>
+        <input class="s-inp" type="number" inputmode="numeric" placeholder="${ph}" value="${v}" onchange="writeDraft('${dayId}','${ex.id}',${i},'r',this.value)">
+        <span class="s-unit">sec</span>
+        <button class="s-done${dn?' on':''}" onclick="toggleDone('${dayId}','${ex.id}',${i},this)"></button>
+      </div>`;
+    }
+    h+=`</div>`;
+  } else if(isCarry){
+    h+=`<div class="set-rows">`;
+    for(let i=0;i<ex.sets;i++){
+      const lW=lEx?.[i]?.w??'',dW=dEx?.[i]?.w!==undefined?dEx[i].w:lW,dn=dEx?.[i]?.done??false;
+      h+=`<div class="set-row"><span class="set-lbl">S${i+1}</span>
+        <input class="s-inp" type="number" inputmode="decimal" placeholder="${lW||'kg'}" value="${dW}" onchange="writeDraft('${dayId}','${ex.id}',${i},'w',this.value)">
+        <span class="s-sep">kg</span><span style="color:var(--muted2);font-size:12px;margin-left:4px">${ex.reps}</span>
+        <button class="s-done${dn?' on':''}" onclick="toggleDone('${dayId}','${ex.id}',${i},this)"></button>
+      </div>`;
+    }
+    h+=`</div>`;
+  } else {
+    h+=`<div class="set-rows">`;
+    for(let i=0;i<ex.sets;i++){
+      const lW=lEx?.[i]?.w??'',lR=lEx?.[i]?.r??'';
+      const dW=dEx?.[i]?.w!==undefined?dEx[i].w:lW,dR=dEx?.[i]?.r!==undefined?dEx[i].r:lR,dn=dEx?.[i]?.done??false;
+      h+=`<div class="set-row"><span class="set-lbl">S${i+1}</span>
+        <input class="s-inp" type="number" inputmode="decimal" placeholder="${lW||'kg'}" value="${dW}" onchange="writeDraft('${dayId}','${ex.id}',${i},'w',this.value)">
+        <span class="s-sep">×</span>
+        <input class="s-inp wide" type="number" inputmode="numeric" placeholder="${lR||'reps'}" value="${dR}" onchange="writeDraft('${dayId}','${ex.id}',${i},'r',this.value)">
+        <button class="s-done${dn?' on':''}" onclick="toggleDone('${dayId}','${ex.id}',${i},this)"></button>
+      </div>`;
+    }
+    h+=`</div>`;
+  }
+  h+=`</div>`;
+  return h;
+}
+
+// ─── Day render ───────────────────────────────────────────────────
+function renderDay(){
+  const day=P[activeDay],last=lastSess(day.id),draft=getDraft(day.id);
+  const week=currentWeek(),deload=isDeload();
+  const dateStr=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+  let h='';
+
+  if(deload){
+    h+=`<div class="dl-banner">
+      <div class="dl-banner-title">↓ Deload Week — Week ${week}</div>
+      <div class="dl-banner-body">All lifts at <strong>60% of normal load</strong>. Same sets, same reps — weight drops. No PRs. Let adaptation consolidate.</div>
+    </div>`;
+  }
+
+  h+=`<div class="day-hdr">
+    <div class="day-name">${day.name}</div>
+    <div class="day-sub">${day.sub}</div>
+    <div class="day-date">${dateStr}</div>
+    ${last?`<div class="day-last">Last session: ${fmt(last.date)}</div>`:''}
+    <div class="week-chip">Week ${week}${deload?' · Deload':''}</div>
+  </div>`;
+
+  day.sections.forEach(sec=>{
+    if(sec.title&&!sec.info)h+=`<div class="sec-hdr">${sec.title}</div>`;
+    if(sec.info)h+=`<div class="icard"><div class="icard-title">${sec.title||'Note'}</div><div class="icard-body">${sec.info}</div></div>`;
+    sec.ex.forEach(ex=>{h+=renderEx(ex,day.id,last,draft);});
+  });
+
+  h+=`<div class="icard-green" style="margin-top:20px">
+    <div class="icard-green-title">Zone 2 — Standalone Sessions</div>
+    <div class="icard-green-body">Two sessions per week on off days. Run · Row · Ruck. <strong>40–50 min at conversational pace</strong> — you should be able to speak in full sentences. Nose breathing if possible. This is the engine. Keep it off training days so both get full quality.</div>
+  </div>`;
+
+  h+=`<div class="spacer"></div>`;
+  document.getElementById('dayContent').innerHTML=h;
+}
+
+function toggleDone(dayId,exId,si,btn){
+  const on=!btn.classList.contains('on');
+  btn.classList.toggle('on',on);
+  writeDraft(dayId,exId,si,'done',on);
+}
+
+// ─── History ──────────────────────────────────────────────────────
+function renderHist(){
+  const all=load(),entries=[];
+  P.forEach(day=>{Object.entries(all[day.id]||{}).forEach(([date,data])=>entries.push({day,date,data}));});
+  entries.sort((a,b)=>b.date.localeCompare(a.date));
+  const el=document.getElementById('tab-hist');
+  if(!entries.length){el.innerHTML=`<div class="empty">No sessions logged yet.<br>Complete your first session to see history here.</div>`;return;}
+  el.innerHTML=entries.map(({day,date,data})=>{
+    const rows=Object.entries(data).map(([exId,sets])=>{
+      const ex=findEx(day,exId);if(!ex)return'';
+      const f=sets.filter(s=>s.w!==''||s.r!=='');if(!f.length)return'';
+      let ds;
+      if(ex.lactate)ds=`${f[0].r||'–'} rds`;
+      else if(ex.timed)ds=f.map(s=>s.r?s.r+'s':'–').join(' · ');
+      else if(ex.carry)ds=f.map(s=>s.w?s.w+'kg':'–').join(' · ');
+      else ds=f.map(s=>`${s.w||'–'}×${s.r||'–'}`).join('  ');
+      return`<div class="hist-ex"><span class="hist-ex-name">${ex.name}</span><span class="hist-ex-data">${ds}</span></div>`;
+    }).join('');
+    if(!rows.trim())return'';
+    return`<div class="hist-entry">
+      <div class="hist-hdr"><div class="hist-day">${day.lbl} — ${day.name}</div><div class="hist-date">${fmt(date)}</div></div>
+      <div class="hist-exes">${rows}</div>
+    </div>`;
+  }).join('')+'<div class="spacer"></div>';
+}
+function findEx(day,exId){for(const s of day.sections){const e=s.ex.find(e=>e.id===exId);if(e)return e;}return null;}
+
+// ─── Benchmarks ───────────────────────────────────────────────────
+function renderBench(){
+  const data=loadB();
+  let h='';
+  BENCH_LIFTS.forEach(lift=>{
+    const logs=(data[lift.id]||[]).slice().sort((a,b)=>b.date.localeCompare(a.date));
+    const cur=logs[0]||null,formOpen=openBench[lift.id]||false;
+    h+=`<div class="bench-card"><div class="bench-top">
+      <div class="bench-name">${lift.name}</div>
+      <div class="bench-target">Target: ${lift.target}</div>`;
+    if(cur){
+      h+=`<div class="bench-big"><span class="bench-big-kg">${cur.weight}</span><span class="bench-big-lbl">kg</span></div>
+      <div class="bench-big-date">Last tested: ${fmtShort(cur.date)}</div>`;
+    }else{
+      h+=`<div style="color:var(--muted);font-size:20px;font-weight:700;padding:4px 0">Not yet tested</div>`;
+    }
+    h+=`</div>
+    <button class="bench-log-btn" onclick="toggleBench('${lift.id}')">+ Log New Test</button>
+    <div class="bench-form${formOpen?' open':''}" id="bf-${lift.id}">
+      <div class="bench-form-lbl">1RM — kg</div>
+      <input class="bench-form-inp" type="number" inputmode="decimal" id="bi-${lift.id}" placeholder="e.g. 85">
+      <button class="bench-save-btn" onclick="saveBenchmark('${lift.id}')">Save</button>
+    </div>`;
+    if(logs.length){
+      h+=`<div class="bench-hist">`;
+      logs.forEach((log,i)=>{
+        const prev=logs[i+1];
+        let diff='';
+        if(prev){const d=log.weight-prev.weight;diff=d>0?`<span class="bench-diff up">+${d}kg</span>`:`<span class="bench-diff same">—</span>`;}
+        h+=`<div class="bench-hist-row"><span class="bench-hist-kg">${log.weight}kg</span><span class="bench-hist-date">${fmtShort(log.date)}</span>${diff}</div>`;
+      });
+      h+=`</div>`;
+    }
+    h+=`</div>`;
+  });
+  const start=getStart(),startD=new Date(start+'T12:00:00');
+  let next=new Date(startD);next.setDate(next.getDate()+84);
+  const now=new Date();while(next<now)next.setDate(next.getDate()+84);
+  h+=`<div class="icard" style="margin-top:4px">
+    <div class="icard-title">Testing Schedule</div>
+    <div class="icard-body">Test all four lifts every <strong>12 weeks</strong>. Replace the heaviest session of that week with max effort attempts. 5+ minutes rest between lifts.<br><br><strong>Next test due: ${fmtLong(next.toISOString().split('T')[0])}</strong></div>
+  </div><div class="spacer"></div>`;
+  document.getElementById('tab-bench').innerHTML=h;
+}
+function toggleBench(id){openBench[id]=!openBench[id];renderBench();}
+function saveBenchmark(id){
+  const inp=document.getElementById('bi-'+id);
+  const w=parseFloat(inp.value);if(!w||w<=0)return;
+  const data=loadB();
+  if(!data[id])data[id]=[];
+  data[id].push({date:today(),weight:w});
+  saveB(data);openBench[id]=false;renderBench();
+}
+
+// ─── Protocol ─────────────────────────────────────────────────────
+function renderProto(){
+  const week=currentWeek(),start=getStart();
+  let dots='';
+  for(let w=1;w<=20;w++){
+    const isDL=w%5===0,isCur=w===week,isPast=w<week;
+    let cls=isDL?'dl':'future';
+    if(!isDL&&isPast)cls='past';
+    if(!isDL&&isCur)cls='now';
+    if(isDL&&isCur)cls='dl now';
+    dots+=`<div class="wdot ${cls}"><span>W${w}</span><span class="wdot-sub">${isDL?'DL':''}</span></div>`;
+  }
+  let h=`
+  <div class="proto-card">
+    <div class="proto-title">Progressive Overload</div>
+    <div class="proto-rule">Hit the top of the rep range for 2 consecutive sessions — add 2.5kg next session.</div>
+    <div class="proto-body">Rep range of <strong>6–8</strong> means <strong>8 reps across all sets, two sessions running</strong> before the weight moves. The app tracks this and shows <strong style="color:#66bb6a">↑ Add 2.5kg</strong> automatically when the condition is met. Add the weight, reset the clock.</div>
+  </div>
+  <div class="proto-card">
+    <div class="proto-title">Deload Protocol</div>
+    <div class="proto-rule">Every 5th week is a deload. Same sets, same reps — 60% of the weight.</div>
+    <div class="proto-body">Currently on <strong>Week ${week}</strong> (started ${fmtShort(start)}). Deload weeks: W5, W10, W15, W20. This is when adaptation consolidates. Skipping deloads accumulates fatigue faster than you recover from it — especially on early starts with shift work on top.<br><br><strong>On a deload:</strong> drop to 60% of working weight. Same movements, same structure. Leave the gym fresh.</div>
+    <div class="week-dots">${dots}</div>
+  </div>
+  <div class="proto-card">
+    <div class="proto-title">Zone 2 — Standalone Sessions</div>
+    <div class="proto-rule">Two sessions per week, on off days. Never bolted onto a strength session.</div>
+    <div class="proto-body">Run · Row · Ruck. <strong>40–50 minutes at conversational pace</strong> — full sentences, nose breathing. Keeping Zone 2 off training days protects the quality of both. The strength session doesn't end compromised and the Zone 2 gets full aerobic attention.<br><br>This is the engine. VO2 max, recovery speed, cognitive sharpness under fatigue — all of it runs through here. Give it its own time.</div>
+  </div>
+  <div class="proto-card">
+    <div class="proto-title">Lactate Threshold — Fortnightly</div>
+    <div class="proto-rule">Every 2 weeks on Day 2, finish with 4 × 4 min hard / 4 min easy.</div>
+    <div class="proto-body">Zone 2 builds the base. Lactate trains the top end — the ability to sustain hard effort without blowing up.<br><br><strong>Hard = cannot hold a conversation.</strong> 85–90% max heart rate. 32 minutes total after the strength work.<br><br>Alternate weekly: Zone 2 standalone → Lactate on Day 2 → Zone 2 standalone → Lactate on Day 2.</div>
+  </div>
+  <div class="proto-card">
+    <div class="proto-title">Hanging — Daily Practice</div>
+    <div class="proto-rule">Passive dead hang — shoulders relaxed, letting them rise. Not packed down.</div>
+    <div class="proto-body">Opens every training session as a 2-set logged block. Also done any time you walk past the bar — 20 to 60 seconds, passive.<br><br><strong>Passive vs active:</strong> Passive hang (shoulders rising) does the structural work — spinal decompression, shoulder capsule health. Active hang (shoulders packed) is the pull-up start position. Both matter. Most men only ever train active.<br><br><strong>Progression:</strong> Two-arm passive → single-arm assisted → single-arm → weighted.</div>
+  </div>
+  <div class="proto-card">
+    <div class="proto-title">Core — What and Why</div>
+    <div class="proto-rule">Anti-extension, anti-rotation, and flexion. Day 1 and Day 3 finishers.</div>
+    <div class="proto-body">Compound lifts brace the core but don't train it directly. For carrying Hudson, twisting, absorbing load — you need all three planes deliberately trained.<br><br><strong>Day 1:</strong> Dead Bug · Pallof Press · Hanging Leg Raise<br><strong>Day 3:</strong> Hollow Body Hold · Copenhagen Plank · Hanging Tuck/L-Sit<br><br>10–12 minutes per session. Not optional.</div>
+  </div>
+  <div class="proto-card">
+    <div class="proto-title">Benchmark Testing — Every 12 Weeks</div>
+    <div class="proto-rule">Test all four Baseline Benchmark lifts every 12 weeks. Log them in the Benchmarks tab.</div>
+    <div class="proto-body">Replace the heaviest session of week 12. Work up to a true 1RM in order — Strict Press, Front Squat, Deadlift, Weighted Pull-Up. 5+ minutes rest between lifts.<br><br><strong>Targets:</strong> Strict Press = bodyweight · Front Squat = 1.5× · Deadlift = 2× · Pull-Up = 50% bodyweight added.</div>
+  </div>
+  <div class="proto-card">
+    <div class="proto-title">Programme Start Date</div>
+    <div class="proto-body">Currently set to <strong>${fmtLong(start)}</strong>. Week counter and deload schedule run from this date.</div>
+    <button class="reset-btn" onclick="resetStart()">Reset Start Date to Today</button>
+  </div>
+  <div class="spacer"></div>`;
+  document.getElementById('tab-proto').innerHTML=h;
+}
+function resetStart(){localStorage.setItem(SKEY,today());renderProto();renderDay();}
+
+// ─── Mobility ─────────────────────────────────────────────────────
+function renderMob(){
+  document.getElementById('tab-mob').innerHTML=
+    `<p class="mob-intro">13 minutes daily. Morning or evening — your call. Seven movements covering every priority joint for longevity. The hanging also opens every training session. Non-negotiable.</p>`+
+    MOB.map((m,i)=>`<div class="mob-card">
+      <div class="mob-num">${i+1}</div>
+      <div><div class="mob-name">${m.name}</div><div class="mob-detail">${m.detail}</div></div>
+      <div class="mob-dur">${m.dur}</div>
+    </div>`).join('')+
+    `<div class="spacer"></div>`;
+}
+
+// ─── Init ──────────────────────────────────────────────────────────
+getStart();
+renderNav();
+renderDay();
+if('serviceWorker' in navigator)navigator.serviceWorker.register('/Dad-Athlete/sw.js');
+</script>
+</body>
+</html>
