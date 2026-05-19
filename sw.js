@@ -1,4 +1,4 @@
-const CACHE = 'da24-v1';
+const CACHE = 'da252-v1';
 const ASSETS = [
   '/Dad-Athlete/',
   '/Dad-Athlete/index.html',
