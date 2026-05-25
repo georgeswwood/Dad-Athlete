@@ -43,7 +43,7 @@ body::after{
 /* HEADER */
 .hdr{position:sticky; top:0; z-index:30; background:rgba(11,11,13,.82); backdrop-filter:blur(14px); border-bottom:1px solid var(--line)}
 .hdr::before{content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--ember),var(--gold),transparent)}
-.hdr-in{max-width:640px; margin:0 auto; padding:14px 18px 0}
+.hdr-in{max-width:640px; margin:0 auto; padding:calc(14px + env(safe-area-inset-top)) 18px 0}
 .brand{display:flex; align-items:baseline; gap:10px}
 .brand h1{font-family:'Oswald',sans-serif; font-weight:700; font-size:23px; letter-spacing:.06em; text-transform:uppercase; line-height:1}
 .brand .v{font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; color:var(--ember); border:1px solid var(--ember-dim); padding:2px 6px; border-radius:5px}
