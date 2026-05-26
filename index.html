@@ -85,7 +85,7 @@ body::after{
 .ex-note{color:var(--muted); font-size:12.5px; line-height:1.45; margin-top:6px}
 .ex-last{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--faint); margin-top:9px; display:flex; gap:7px; flex-wrap:wrap; align-items:center}
 .ex-last b{color:var(--steel); font-weight:700; letter-spacing:.06em}
-
+.prog{display:inline-flex;align-items:center;gap:5px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--ok);background:rgba(76,175,125,.12);border:1px solid rgba(76,175,125,.35);border-radius:5px;padding:3px 7px;margin-top:8px}
 .sets{margin-top:11px; display:flex; flex-direction:column; gap:6px}
 .setrow{display:flex; align-items:center; gap:8px}
 .setrow .n{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--faint); width:16px; flex-shrink:0}
@@ -332,7 +332,17 @@ function fmtSets(sets){
 }
 
 /* ---------- RENDER DAY ---------- */
-function renderDay(){
+function topRep(sr){ const m=sr.match(/(\d+)[–\-](\d+)/); return m?+m[2]:null; }
+function progressCheck(ex,dayId,date){
+  const top=topRep(ex.sr); if(!top) return null;
+  const last=lastSession(dayId,ex.id,date); if(!last) return null;
+  const nSets=SETS_FOR(ex.sr);
+  const filled=last.sets.filter(s=>s[0]||s[1]);
+  if(filled.length<nSets) return null;
+  if(!filled.every(s=>+s[1]>=top)) return null;
+  return ex.bench?'weight':'reps';
+}
+  function renderDay(){
   const c=document.getElementById('dayContent');
   if(activeDay==='wed'||activeDay==='sat'){ renderRecovery(activeDay); return; }
   const day=P.find(d=>d.id===activeDay);
@@ -366,6 +376,8 @@ function renderDay(){
         </div>
         <div class="ex-note">${ex.note}</div>
         ${last?`<div class="ex-last"><b>LAST</b> ${fmtSets(last.sets)} <span style="color:var(--faint)">· ${last.date.slice(5)}</span></div>`:''}
+        ${last?`<div class="ex-last"><b>LAST</b> ${fmtSets(last.sets)} <span style="color:var(--faint)">· ${last.date.slice(5)}</span></div>`:''}
+${(()=>{ const p=progressCheck(ex,day.id,date); return p?`<div class="prog">↑ ${p==='weight'?'ADD +2.5 KG':'ADD REPS · THEN PAUSE'}</div>`:''; })()}
         <div class="sets">${rows}</div>
       </div>`;
       delay+=.03;
