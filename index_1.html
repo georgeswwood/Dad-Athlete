@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0b0b0d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Dad Athlete">
+<link rel="manifest" href="manifest.json">
+<title>Dad Athlete V3.1 — Superman Build</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0b0b0d; --panel:#141417; --panel-2:#1a1a1f; --raised:#202027;
+  --line:#2a2a31; --line-2:#34343d;
+  --text:#f4f3f0; --muted:#9a9aa2; --faint:#6a6a73;
+  --ember:#ff6a1a; --ember-dim:#c2491a; --ember-bg:rgba(255,106,26,.10);
+  --gold:#e8b54a; --gold-bg:rgba(232,181,74,.10);
+  --steel:#5fb4d6;
+  --ok:#4caf7d;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--ink); color:var(--text);
+  font-family:'Hanken Grotesk',sans-serif; font-size:15px; line-height:1.55;
+  padding-bottom:calc(120px + env(safe-area-inset-bottom));
+  overflow-x:hidden;
+}
+body::before{
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background:radial-gradient(120% 60% at 50% -10%, rgba(255,106,26,.10), transparent 60%);
+}
+body::after{
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.035;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.wrap{position:relative; z-index:1; max-width:640px; margin:0 auto}
+
+/* HEADER */
+.hdr{position:sticky; top:0; z-index:30; background:rgba(11,11,13,.82); backdrop-filter:blur(14px); border-bottom:1px solid var(--line)}
+.hdr::before{content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--ember),var(--gold),transparent)}
+.hdr-in{max-width:640px; margin:0 auto; padding:calc(14px + env(safe-area-inset-top)) 18px 0}
+.brand{display:flex; align-items:baseline; gap:10px}
+.brand h1{font-family:'Oswald',sans-serif; font-weight:700; font-size:23px; letter-spacing:.06em; text-transform:uppercase; line-height:1}
+.brand .v{font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; color:var(--ember); border:1px solid var(--ember-dim); padding:2px 6px; border-radius:5px}
+.brand .sub{font-family:'Oswald',sans-serif; font-weight:400; font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--faint); margin-left:auto}
+.tabs{display:flex; gap:2px; margin-top:12px}
+.tab{flex:1; background:none; border:none; color:var(--faint); font-family:'Oswald',sans-serif; font-weight:500; font-size:12.5px; letter-spacing:.13em; text-transform:uppercase; padding:11px 4px 13px; cursor:pointer; border-bottom:2px solid transparent; transition:color .18s}
+.tab.on{color:var(--text); border-bottom-color:var(--ember)}
+
+/* DAY NAV */
+.daynav{display:flex; gap:7px; overflow-x:auto; padding:14px 18px 4px; scrollbar-width:none}
+.daynav::-webkit-scrollbar{display:none}
+.dbtn{flex-shrink:0; background:var(--panel); border:1px solid var(--line); border-radius:11px; padding:9px 14px; cursor:pointer; min-width:62px; text-align:center; transition:.18s}
+.dbtn .d{font-family:'Oswald',sans-serif; font-weight:600; font-size:13px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted)}
+.dbtn .t{font-size:10px; color:var(--faint); margin-top:1px; white-space:nowrap}
+.dbtn.on{background:var(--ember-bg); border-color:var(--ember)}
+.dbtn.on .d{color:var(--ember)} .dbtn.on .t{color:var(--text)}
+.dbtn.today::after{content:'TODAY'; display:block; font-family:'JetBrains Mono',monospace; font-size:7.5px; letter-spacing:.1em; color:var(--gold); margin-top:3px}
+
+.content{padding:6px 18px 40px}
+
+/* DAY HEADER */
+.dayhead{padding:16px 2px 6px; animation:rise .4s both}
+.dayhead .lbl{font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.18em; color:var(--ember); text-transform:uppercase}
+.dayhead h2{font-family:'Oswald',sans-serif; font-weight:700; font-size:30px; letter-spacing:.01em; line-height:1.04; margin-top:3px}
+.dayhead .foc{color:var(--muted); font-size:13px; margin-top:4px}
+
+.block-tag{display:flex; align-items:center; gap:9px; margin:22px 0 11px; animation:rise .4s both}
+.block-tag span{font-family:'Oswald',sans-serif; font-weight:600; font-size:11.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--faint)}
+.block-tag::after{content:''; flex:1; height:1px; background:var(--line)}
+.ss-pill{font-family:'JetBrains Mono',monospace; font-size:9px; font-weight:700; letter-spacing:.08em; color:var(--steel); border:1px solid rgba(95,180,214,.4); border-radius:4px; padding:1px 5px}
+
+/* EXERCISE CARD */
+.ex{background:var(--panel); border:1px solid var(--line); border-radius:15px; padding:15px 15px 6px; margin-bottom:11px; animation:rise .45s both}
+.ex.bench{border-color:rgba(232,181,74,.32); background:linear-gradient(180deg,var(--gold-bg),var(--panel) 60%)}
+.ex-top{display:flex; align-items:flex-start; gap:10px}
+.ex-name{font-family:'Oswald',sans-serif; font-weight:600; font-size:18px; letter-spacing:.01em; line-height:1.12; flex:1}
+.star{color:var(--gold); font-size:13px; flex-shrink:0; margin-top:3px}
+.ex-meta{font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700; color:var(--ember); white-space:nowrap; flex-shrink:0; margin-top:2px}
+.ex-note{color:var(--muted); font-size:12.5px; line-height:1.45; margin-top:6px}
+.ex-last{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--faint); margin-top:9px; display:flex; gap:7px; flex-wrap:wrap; align-items:center}
+.ex-last b{color:var(--steel); font-weight:700; letter-spacing:.06em}
+.prog{display:inline-flex;align-items:center;gap:5px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--ok);background:rgba(76,175,125,.12);border:1px solid rgba(76,175,125,.35);border-radius:5px;padding:3px 7px;margin-top:8px}
+.sets{margin-top:11px; display:flex; flex-direction:column; gap:6px}
+.setrow{display:flex; align-items:center; gap:8px}
+.setrow .n{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--faint); width:16px; flex-shrink:0}
+.fld{flex:1; position:relative}
+.fld input{width:100%; background:var(--panel-2); border:1px solid var(--line); border-radius:9px; color:var(--text); font-family:'JetBrains Mono',monospace; font-size:15px; font-weight:700; text-align:center; padding:10px 6px; transition:.15s}
+.fld input:focus{outline:none; border-color:var(--ember); background:var(--raised)}
+.fld input::placeholder{color:var(--faint); font-weight:500}
+.fld .u{position:absolute; right:9px; top:50%; transform:translateY(-50%); font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--faint); pointer-events:none; letter-spacing:.05em}
+.fld input:placeholder-shown + .u{display:none}
+
+.saved{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--ok); text-align:center; padding:7px 0 2px; opacity:0; transition:opacity .2s}
+.saved.show{opacity:1}
+
+.savebar{position:sticky; bottom:calc(76px + env(safe-area-inset-bottom)); z-index:20; padding:10px 0 4px; margin-top:6px}
+.savebtn{width:100%; background:var(--ember); color:#100a05; border:none; border-radius:13px; font-family:'Oswald',sans-serif; font-weight:700; font-size:15px; letter-spacing:.1em; text-transform:uppercase; padding:15px; cursor:pointer; box-shadow:0 8px 24px rgba(255,106,26,.28); transition:.15s}
+.savebtn:active{transform:scale(.985)}
+
+/* REST / RECOVERY DAY */
+.rest-card{background:var(--panel); border:1px solid var(--line); border-radius:15px; padding:18px; margin-bottom:11px; animation:rise .45s both}
+.rest-card h3{font-family:'Oswald',sans-serif; font-weight:600; font-size:17px; letter-spacing:.02em; margin-bottom:3px}
+.rest-card p{color:var(--muted); font-size:13px}
+.mob-row{display:flex; align-items:center; gap:12px; padding:11px 0; border-top:1px solid var(--line)}
+.mob-row:first-of-type{border-top:none}
+.mob-row .mn{font-family:'Oswald',sans-serif; font-weight:500; font-size:15px; flex:1}
+.mob-row .md{color:var(--faint); font-size:11.5px}
+.mob-row .mt{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--ember); flex-shrink:0}
+
+/* HISTORY */
+.hist-item{background:var(--panel); border:1px solid var(--line); border-radius:13px; margin-bottom:9px; overflow:hidden; animation:rise .4s both}
+.hist-head{display:flex; align-items:center; gap:10px; padding:14px 15px; cursor:pointer}
+.hist-head .hd{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--faint)}
+.hist-head .hn{font-family:'Oswald',sans-serif; font-weight:600; font-size:15px; letter-spacing:.03em; flex:1}
+.hist-head .ar{color:var(--faint); transition:transform .2s}
+.hist-item.open .ar{transform:rotate(90deg)}
+.hist-body{display:none; padding:0 15px 13px}
+.hist-item.open .hist-body{display:block}
+.hist-ex{display:flex; gap:9px; padding:7px 0; border-top:1px solid var(--line); font-size:12.5px}
+.hist-ex .hx{flex:1; color:var(--muted)}
+.hist-ex .hv{font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--steel); text-align:right}
+.empty{text-align:center; color:var(--faint); padding:50px 20px; font-size:13.5px; line-height:1.6}
+
+/* BENCHMARKS */
+.bm{background:var(--panel); border:1px solid rgba(232,181,74,.28); border-radius:15px; padding:16px; margin-bottom:11px; animation:rise .4s both}
+.bm-top{display:flex; align-items:baseline; gap:10px; margin-bottom:10px}
+.bm-name{font-family:'Oswald',sans-serif; font-weight:600; font-size:17px; flex:1}
+.bm-best{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:20px; color:var(--gold)}
+.bm-best small{font-size:11px; color:var(--faint); font-weight:500}
+.spark{width:100%; height:46px; display:block}
+.bm-foot{display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--faint); margin-top:5px}
+.bm-none{font-size:12px; color:var(--faint); font-family:'JetBrains Mono',monospace}
+
+/* NOTES */
+.note{background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--ember); border-radius:12px; padding:15px 16px; margin-bottom:11px; animation:rise .4s both}
+.note h3{font-family:'Oswald',sans-serif; font-weight:600; font-size:15.5px; letter-spacing:.04em; text-transform:uppercase; margin-bottom:6px}
+.note h3.gold{color:var(--gold)}
+.note p{color:var(--muted); font-size:13.5px; line-height:1.6}
+.note p+p{margin-top:8px}
+.note b{color:var(--text)}
+.principle{display:flex; gap:11px; padding:9px 0; border-top:1px solid var(--line)}
+.principle:first-of-type{border-top:none}
+.principle .pn{font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--ember); font-weight:700; flex-shrink:0}
+.principle .pt{font-size:13px; color:var(--muted)}
+
+/* REST TIMER */
+.timer{position:fixed; left:0; right:0; bottom:0; z-index:40; background:rgba(16,16,19,.94); backdrop-filter:blur(16px); border-top:1px solid var(--line); padding:10px 18px calc(10px + env(safe-area-inset-bottom))}
+.timer-in{max-width:640px; margin:0 auto; display:flex; align-items:center; gap:10px}
+.timer .rd{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:22px; min-width:62px; letter-spacing:.02em; color:var(--text); transition:color .2s}
+.timer .rd.run{color:var(--ember)}
+.timer .lbl{font-family:'Oswald',sans-serif; font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--faint); flex:1; line-height:1.2}
+.preset{background:var(--panel); border:1px solid var(--line); border-radius:9px; color:var(--text); font-family:'JetBrains Mono',monospace; font-weight:700; font-size:13px; padding:9px 12px; cursor:pointer; transition:.15s}
+.preset:active{background:var(--ember-bg); border-color:var(--ember)}
+.preset.stop{background:var(--ember-bg); border-color:var(--ember); color:var(--ember)}
+
+@keyframes rise{from{opacity:0; transform:translateY(9px)}to{opacity:1; transform:none}}
+.pane{display:none} .pane.on{display:block}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hdr">
+    <div class="hdr-in">
+      <div class="brand">
+        <h1>Dad Athlete</h1>
+        <span class="v">V3.1</span>
+        <span class="sub">Superman Build</span>
+      </div>
+      <nav class="tabs">
+        <button class="tab on" data-tab="train" onclick="tab('train',this)">Train</button>
+        <button class="tab" data-tab="history" onclick="tab('history',this)">History</button>
+        <button class="tab" data-tab="bench" onclick="tab('bench',this)">Benchmarks</button>
+        <button class="tab" data-tab="notes" onclick="tab('notes',this)">Doctrine</button>
+      </nav>
+    </div>
+  </header>
+
+  <section id="pane-train" class="pane on">
+    <div class="daynav" id="daynav"></div>
+    <div class="content" id="dayContent"></div>
+  </section>
+
+  <section id="pane-history" class="pane"><div class="content" id="histContent"></div></section>
+  <section id="pane-bench" class="pane"><div class="content" id="benchContent"></div></section>
+  <section id="pane-notes" class="pane"><div class="content" id="notesContent"></div></section>
+</div>
+
+<div class="timer">
+  <div class="timer-in">
+    <div class="rd" id="rd">0:00</div>
+    <div class="lbl">Rest<br>Timer</div>
+    <button class="preset" onclick="rest(90)">1:30</button>
+    <button class="preset" onclick="rest(120)">2:00</button>
+    <button class="preset" onclick="rest(180)">3:00</button>
+  </div>
+</div>
+
+<script>
+/* ---------- PROGRAMME DATA ---------- */
+const P = [
+  { id:'d1', day:'Day 1', name:'Upper A', focus:'Press-led · width & the V-taper', weekday:1,
+    blocks:[
+      { tag:'Superset A', ss:true, ex:[
+        {id:'strict_press', name:'Strict Press', sr:'4 × 4–6', bench:true, note:'First and fresh. Overhead width is the whole Superman illusion.'},
+        {id:'wtd_pullup',   name:'Weighted Pull-Up', sr:'4 × 5–8', bench:true, note:'Add weight before reps. The lift that builds the taper.'},
+      ]},
+      { tag:'Superset B', ss:true, ex:[
+        {id:'flat_bench', name:'Flat Bench Press', sr:'3 × 6–8', bench:true, note:'The horizontal press. Mid and lower chest the inclines miss.'},
+        {id:'bb_row',     name:'Bent-Over Row', sr:'3 × 8–10', note:'Brace hard, row to the sternum. Back thickness.'},
+      ]},
+      { tag:'Superset C', ss:true, ex:[
+        {id:'lat_raise1', name:'DB Lateral Raise', sr:'3 × 12–15', note:'Slow drop. 12.5kg — chase reps, then add a tempo pause.'},
+        {id:'bb_curl',    name:'Barbell Curl', sr:'3 × 8–12', note:'Strict. No swing.'},
+        {id:'face_pull1', name:'Face Pull', sr:'3 × 15–20', note:'Band or rope, pull to forehead, elbows high. Rear delt and posture — the desk-job fix.'},
+      ]},
+    ]},
+  { id:'d2', day:'Day 2', name:'Lower A', focus:'Squat-led · the foundation', weekday:2,
+    blocks:[
+      { tag:'Strength', ex:[
+        {id:'front_sq', name:'Front Squat', sr:'4 × 4–6', bench:true, note:'Upright, back-friendly. The squat benchmark.'},
+        {id:'rdl',      name:'Romanian Deadlift', sr:'3 × 8–10', note:'Hinge. Load the hamstring stretch, control the descent.'},
+      ]},
+      { tag:'Hypertrophy', ex:[
+        {id:'bulg',     name:'Bulgarian Split Squat', sr:'3 × 8–10 / leg', note:'12.5kg. 3-sec lower, pause at the bottom. Fixes left/right gaps.'},
+        {id:'ham_curl', name:'Slider / Towel Ham Curl', sr:'3 × 8–12', note:'Heels on towels, bridge up, curl in. Single-leg when it gets easy.'},
+        {id:'calf_std', name:'Standing Calf Raise', sr:'4 × 12–15', note:'Barbell on back. Full stretch, hard pause at the top.'},
+        {id:'hlr',      name:'Hanging Leg Raise', sr:'3 × 12–15', note:'No swing. The eccentric builds the blocky midsection.'},
+      ]},
+    ]},
+  { id:'d3', day:'Day 3', name:'Upper B', focus:'Hypertrophy-led · shape & detail', weekday:4,
+    blocks:[
+      { tag:'Superset A', ss:true, ex:[
+        {id:'inc_bench', name:'Incline Bench Press', sr:'4 × 6–8', note:'30°. The upper-chest shelf.'},
+        {id:'cs_row',    name:'Chest-Supported / Inverted Row', sr:'3 × 10–12', note:'Different angle from Day 1. Mid-back detail.'},
+      ]},
+      { tag:'Superset B', ss:true, ex:[
+        {id:'wtd_dip',  name:'Weighted Dip', sr:'3 × 8–10', note:'Lean forward for chest, upright for triceps.'},
+        {id:'inc_curl', name:'Incline DB Curl', sr:'3 × 10–12', note:'Arms behind the body — bicep loaded at full stretch.'},
+      ]},
+      { tag:'Superset C', ss:true, ex:[
+        {id:'lat_raise2', name:'DB Lateral Raise', sr:'4 × 12–15', note:'Second weekly hit — 7 sets total across the week.'},
+        {id:'oh_ext',     name:'Overhead Triceps Extension', sr:'3 × 10–12', note:'Long head, loaded at the stretch. The bulk of the arm.'},
+        {id:'rear_delt_fly', name:'Rear Delt Fly', sr:'3 × 12–15', note:'Chest-supported or bent-over, DBs. Second posterior-shoulder hit of the week.'},
+      ]},
+    ]},
+  { id:'d4', day:'Day 4', name:'Lower B + Carry', focus:'Hinge & carry · the function day', weekday:5,
+    blocks:[
+      { tag:'Strength', ex:[
+        {id:'deadlift', name:'Deadlift', sr:'4 × 4–6', bench:true, note:'Fresh — nothing heavy before it. The pick-Hudson-off-the-floor lift.'},
+        {id:'gob_sq',   name:'Heel-Elevated Goblet Squat', sr:'3 × 12–15', note:'12.5kg at the chest, heels on a plate. Quad volume, low spinal cost.'},
+        {id:'hip_thr',  name:'Hip Thrust', sr:'3 × 10–12', note:'Squeeze hard, 2-sec hold at the top.'},
+        {id:'calf_sl',  name:'Single-Leg Calf Raise', sr:'3 × 12–15 / leg', note:'DB in hand. Balance plus full stretch.'},
+      ]},
+      { tag:'Carry · this IS the conditioning', ex:[
+        {id:'farmer', name:"Farmer's Carry", sr:'4 × 30 m', carry:true, note:'Heavy. Rigid torso, grip and go. Builds traps, core, grip — and looks strong.'},
+      ]},
+    ]},
+];
+
+const RECOVERY = {
+  wed:{ title:'Wednesday — Decompress', sub:'Spinal decompression + 5-min mobility. This is what keeps the lifts heavy and the back healthy.',
+    items:[
+      {n:'Dead Hang', d:'Full passive hang. Let the spine lengthen.', t:'60 sec'},
+      {n:'Hip 90/90', d:'Both sides. Breathe into the stretch.', t:'2 min'},
+      {n:'Cat-Cow', d:'10 slow reps, full control at each end.', t:'1 min'},
+      {n:'Thoracic Rotation', d:'Quadruped, both sides.', t:'2 min'},
+      {n:'Deep Squat Hold', d:'Heels down, chest up, breathe.', t:'1 min'},
+    ]},
+  sat:{ title:'Saturday — Dad Walk', sub:'30–45 min with Hudson. Zone 2 and active recovery at once. This is the thing the physique exists to serve.', items:[] },
+};
+
+const BENCH_IDS = ['strict_press','wtd_pullup','flat_bench','front_sq','deadlift'];
+const SETS_FOR = sr => { const m = sr.match(/^(\d+)/); return m ? +m[1] : 3; };
+const KEY = 'da3';
+const todayStr = () => new Date().toISOString().split('T')[0];
+const sKey = (dayId,date) => `${KEY}_${dayId}_${date}`;
+
+/* ---------- TABS ---------- */
+function tab(name, btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  btn.classList.add('on');
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('on'));
+  document.getElementById('pane-'+name).classList.add('on');
+  window.scrollTo(0,0);
+  if(name==='history') renderHistory();
+  if(name==='bench') renderBench();
+}
+
+/* ---------- DAY NAV ---------- */
+let activeDay = null;
+function renderNav(){
+  const wd = new Date().getDay();
+  const nav = document.getElementById('daynav'); nav.innerHTML='';
+  const items = [...P.map(d=>({id:d.id,d:d.day.replace('Day ','D'),t:d.name,wd:d.weekday})),
+                 {id:'wed',d:'Wed',t:'Recover',wd:3},{id:'sat',d:'Sat',t:'Dad Walk',wd:6}];
+  let pick = items.find(i=>i.wd===wd);
+  if(!activeDay) activeDay = pick ? pick.id : 'd1';
+  items.forEach(i=>{
+    const b=document.createElement('button');
+    b.className='dbtn'+(i.id===activeDay?' on':'')+(i.wd===wd?' today':'');
+    b.innerHTML=`<div class="d">${i.d}</div><div class="t">${i.t}</div>`;
+    b.onclick=()=>{ activeDay=i.id; renderNav(); renderDay(); window.scrollTo(0,0); };
+    nav.appendChild(b);
+  });
+}
+
+/* ---------- LAST SESSION LOOKUP ---------- */
+function lastSession(dayId, exId, beforeDate){
+  let dates=[];
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i);
+    if(k.startsWith(`${KEY}_${dayId}_`)){
+      const date=k.split('_').pop();
+      if(date<beforeDate) dates.push(date);
+    }
+  }
+  dates.sort().reverse();
+  for(const date of dates){
+    try{
+      const data=JSON.parse(localStorage.getItem(sKey(dayId,date)));
+      if(data && data[exId] && data[exId].some(s=>s[0]||s[1])) return {date, sets:data[exId]};
+    }catch(e){}
+  }
+  return null;
+}
+function fmtSets(sets){
+  return sets.filter(s=>s[0]||s[1]).map(s=>`${s[0]||'·'}×${s[1]||'·'}`).join('  ');
+}
+
+/* ---------- PROGRESSION CHECK ---------- */
+function topRep(sr){ const m=sr.match(/(\d+)[–\-](\d+)/); return m?+m[2]:null; }
+function progressCheck(ex,dayId,date){
+  const top=topRep(ex.sr); if(!top) return null;
+  const last=lastSession(dayId,ex.id,date); if(!last) return null;
+  const nSets=SETS_FOR(ex.sr);
+  const filled=last.sets.filter(s=>s[0]||s[1]);
+  if(filled.length<nSets) return null;
+  if(!filled.every(s=>+s[1]>=top)) return null;
+  return ex.bench?'weight':'reps';
+}
+
+/* ---------- RENDER DAY ---------- */
+function renderDay(){
+  const c=document.getElementById('dayContent');
+  if(activeDay==='wed'||activeDay==='sat'){ renderRecovery(activeDay); return; }
+  const day=P.find(d=>d.id===activeDay);
+  const date=todayStr();
+  let saved={};
+  try{ saved=JSON.parse(localStorage.getItem(sKey(day.id,date)))||{}; }catch(e){}
+
+  let h=`<div class="dayhead"><div class="lbl">${day.day} · ${day.focus.split('·')[0].trim()}</div>
+    <h2>${day.name}</h2><div class="foc">${day.focus}</div></div>`;
+  let delay=0;
+  day.blocks.forEach(bl=>{
+    h+=`<div class="block-tag" style="animation-delay:${delay}s"><span>${bl.tag}</span>${bl.ss?'<span class="ss-pill">SUPERSET</span>':''}</div>`;
+    delay+=.03;
+    bl.ex.forEach(ex=>{
+      const nSets=SETS_FOR(ex.sr);
+      const last=lastSession(day.id, ex.id, date);
+      const cur=saved[ex.id]||[];
+      let rows='';
+      for(let i=0;i<nSets;i++){
+        const w=(cur[i]&&cur[i][0])||''; const r=(cur[i]&&cur[i][1])||'';
+        const u1=ex.carry?'kg':'kg'; const u2=ex.carry?'m':'reps';
+        rows+=`<div class="setrow"><div class="n">${i+1}</div>
+          <div class="fld"><input type="number" inputmode="decimal" data-ex="${ex.id}" data-set="${i}" data-f="0" value="${w}" placeholder="${ex.carry?'load':'kg'}"><span class="u">${u1}</span></div>
+          <div class="fld"><input type="number" inputmode="numeric" data-ex="${ex.id}" data-set="${i}" data-f="1" value="${r}" placeholder="${u2}"><span class="u">${u2}</span></div>
+        </div>`;
+      }
+      const prog=progressCheck(ex,day.id,date);
+      h+=`<div class="ex ${ex.bench?'bench':''}" style="animation-delay:${delay}s">
+        <div class="ex-top">
+          <div class="ex-name">${ex.name}${ex.bench?' <span class="star">★</span>':''}</div>
+          <div class="ex-meta">${ex.sr}</div>
+        </div>
+        <div class="ex-note">${ex.note}</div>
+        ${last?`<div class="ex-last"><b>LAST</b> ${fmtSets(last.sets)} <span style="color:var(--faint)">· ${last.date.slice(5)}</span></div>`:''}
+        ${prog?`<div class="prog">↑ ${prog==='weight'?'ADD +2.5 KG':'ADD REPS · THEN PAUSE'}</div>`:''}
+        <div class="sets">${rows}</div>
+      </div>`;
+      delay+=.03;
+    });
+  });
+  h+=`<div class="saved" id="savedMsg">Session logged ✓</div>
+      <div class="savebar"><button class="savebtn" onclick="saveDay('${day.id}')">Log Session</button></div>`;
+  c.innerHTML=h;
+}
+
+function renderRecovery(which){
+  const c=document.getElementById('dayContent');
+  const r=RECOVERY[which];
+  let h=`<div class="dayhead"><div class="lbl">${which==='wed'?'Mid-week':'Weekend'}</div><h2>${r.title.split('—')[1].trim()}</h2></div>
+    <div class="rest-card"><h3>${r.title.split('—')[0].trim()}</h3><p>${r.sub}</p></div>`;
+  if(r.items.length){
+    h+=`<div class="rest-card">`;
+    r.items.forEach(it=>{ h+=`<div class="mob-row"><div><div class="mn">${it.n}</div><div class="md">${it.d}</div></div><div class="mt">${it.t}</div></div>`; });
+    h+=`</div>`;
+  }
+  c.innerHTML=h;
+}
+
+/* ---------- SAVE ---------- */
+function saveDay(dayId){
+  const date=todayStr();
+  const data={};
+  document.querySelectorAll('#dayContent input[data-ex]').forEach(inp=>{
+    const ex=inp.dataset.ex, s=+inp.dataset.set, f=+inp.dataset.f;
+    if(!data[ex]) data[ex]=[];
+    if(!data[ex][s]) data[ex][s]=['',''];
+    data[ex][s][f]=inp.value.trim();
+  });
+  localStorage.setItem(sKey(dayId,date), JSON.stringify(data));
+  const m=document.getElementById('savedMsg'); m.classList.add('show');
+  setTimeout(()=>m.classList.remove('show'),1800);
+}
+
+/* ---------- HISTORY ---------- */
+function exName(id){ for(const d of P) for(const b of d.blocks) for(const e of b.ex) if(e.id===id) return e.name; return id; }
+function renderHistory(){
+  const c=document.getElementById('histContent');
+  let entries=[];
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i);
+    if(k.startsWith(KEY+'_')){
+      const parts=k.split('_'); const date=parts.pop(); const dayId=parts.slice(1).join('_');
+      const day=P.find(d=>d.id===dayId); if(!day) continue;
+      try{ const data=JSON.parse(localStorage.getItem(k)); entries.push({date,dayId,name:day.name,data}); }catch(e){}
+    }
+  }
+  entries.sort((a,b)=>b.date.localeCompare(a.date)||0);
+  if(!entries.length){ c.innerHTML=`<div class="empty">No sessions logged yet.<br>Train, log it, and your history builds here — every number you'll need to beat next time.</div>`; return; }
+  let h='';
+  entries.forEach((e,idx)=>{
+    let rows='';
+    for(const exId in e.data){
+      const f=fmtSets(e.data[exId]); if(!f) continue;
+      rows+=`<div class="hist-ex"><div class="hx">${exName(exId)}</div><div class="hv">${f}</div></div>`;
+    }
+    if(!rows) return;
+    const d=new Date(e.date+'T00:00'); const ds=d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
+    h+=`<div class="hist-item" id="h${idx}"><div class="hist-head" onclick="document.getElementById('h${idx}').classList.toggle('open')">
+      <div class="hd">${ds}</div><div class="hn">${e.name}</div><div class="ar">›</div></div>
+      <div class="hist-body">${rows}</div></div>`;
+  });
+  c.innerHTML=h||`<div class="empty">No sessions logged yet.</div>`;
+}
+
+/* ---------- BENCHMARKS ---------- */
+function benchHistory(exId){
+  let pts=[];
+  for(const d of P) for(const b of d.blocks) for(const e of b.ex){
+    if(e.id!==exId) continue;
+    for(let i=0;i<localStorage.length;i++){
+      const k=localStorage.key(i);
+      if(k.startsWith(`${KEY}_${d.id}_`)){
+        const date=k.split('_').pop();
+        try{ const data=JSON.parse(localStorage.getItem(k));
+          if(data[exId]){ const ws=data[exId].map(s=>parseFloat(s[0])).filter(x=>!isNaN(x)); if(ws.length) pts.push({date,w:Math.max(...ws)}); }
+        }catch(e){}
+      }
+    }
+  }
+  pts.sort((a,b)=>a.date.localeCompare(b.date));
+  return pts;
+}
+function sparkline(pts){
+  if(pts.length<2) return '';
+  const w=300,h=46,pad=4;
+  const ws=pts.map(p=>p.w); const mn=Math.min(...ws),mx=Math.max(...ws); const rng=mx-mn||1;
+  const step=(w-pad*2)/(pts.length-1);
+  const px=i=>pad+i*step; const py=v=>h-pad-((v-mn)/rng)*(h-pad*2);
+  let d=''; pts.forEach((p,i)=>{ d+=(i?'L':'M')+px(i).toFixed(1)+' '+py(p.w).toFixed(1); });
+  let dots=pts.map((p,i)=>`<circle cx="${px(i).toFixed(1)}" cy="${py(p.w).toFixed(1)}" r="2.4" fill="#e8b54a"/>`).join('');
+  return `<svg class="spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
+    <path d="${d}" fill="none" stroke="#e8b54a" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" opacity=".9"/>${dots}</svg>`;
+}
+function renderBench(){
+  const c=document.getElementById('benchContent');
+  let h=`<div class="dayhead"><div class="lbl">Tracked Lifts</div><h2>Benchmarks</h2><div class="foc">Five lifts chosen for the physique and the function. The bar is the lead indicator — when these climb, the look is locked in 4–6 weeks behind it.</div></div>`;
+  BENCH_IDS.forEach(id=>{
+    const pts=benchHistory(id);
+    const best=pts.length?Math.max(...pts.map(p=>p.w)):null;
+    const unit = id==='wtd_pullup' ? 'kg added' : 'kg';
+    h+=`<div class="bm"><div class="bm-top"><div class="bm-name">${exName(id)} <span class="star">★</span></div>
+      <div class="bm-best">${best!=null?best:'—'}${best!=null?` <small>${unit}</small>`:''}</div></div>`;
+    if(pts.length>=2){
+      h+=sparkline(pts)+`<div class="bm-foot"><span>${pts[0].date.slice(5)} · ${pts[0].w}kg</span><span>${pts[pts.length-1].date.slice(5)} · ${pts[pts.length-1].w}kg</span></div>`;
+    } else {
+      h+=`<div class="bm-none">Log this lift twice to see the trend.</div>`;
+    }
+    h+=`</div>`;
+  });
+  c.innerHTML=h;
+}
+
+/* ---------- DOCTRINE ---------- */
+function renderNotes(){
+  document.getElementById('notesContent').innerHTML=`
+  <div class="dayhead"><div class="lbl">The Why</div><h2>Doctrine</h2><div class="foc">Read this when you're tempted to add something.</div></div>
+  <div class="note"><h3>The One Goal</h3><p>The build in the reference: <b>broad delts, full upper chest, a clean V-taper to a lean waist</b>, at roughly 10–12% body fat. It's a proportions-and-leanness look, not a mass look. Most of the effect is shoulder width over a tight midsection.</p></div>
+  <div class="note"><h3>The Four-Principle Test</h3>
+    <div class="principle"><div class="pn">1</div><div class="pt">Does it serve <b>the build</b>?</div></div>
+    <div class="principle"><div class="pn">2</div><div class="pt">Does it serve <b>the function</b> — keeping up with Hudson?</div></div>
+    <div class="principle"><div class="pn">3</div><div class="pt">Does it fit <b>the hour</b>?</div></div>
+    <div class="principle"><div class="pn">4</div><div class="pt">Can you <b>recover</b> from it on broken sleep?</div></div>
+    <p style="margin-top:9px">If a new idea fails any one of these, it's drift. Cut it.</p></div>
+  <div class="note"><h3 class="gold">The Benchmark Spine ★</h3><p>Strict Press, Weighted Pull-Up, Flat Bench, Front Squat, Deadlift. Progress these <b>+2.5kg when you clear the top of every set</b>; repeat the weight on a miss. Everything else is accessory — add reps, then a tempo pause, since the dumbbells cap at 12.5kg.</p></div>
+  <div class="note"><h3>Function Is Built In</h3><p>The deadlift and the carries <b>are</b> the fatherhood training — lift him, haul the buggy, carry him on your shoulders. And they auto-scale: as Hudson gets heavier, the bar follows. The function updates itself for free.</p></div>
+  <div class="note"><h3>What Got Cut</h3><p>Box jumps, lactate intervals, power cleans, the structured Zone 2 mandate, the second heavy squat. None served the build or bedtime — it was audit-drift. Conditioning is now just the carries and the Saturday walk.</p></div>
+  <div class="note"><h3>The Mirror Lies</h3><p>Track the lifts, not the scale. Bodyweight drifts toward 83kg <b>slowly</b>. Nutrition stays your domain, deliberately out of this app.</p></div>`;
+}
+
+/* ---------- REST TIMER ---------- */
+let tInt=null, tEnd=0;
+function rest(sec){
+  const rd=document.getElementById('rd');
+  if(tInt){ clearInterval(tInt); tInt=null; rd.classList.remove('run'); document.querySelectorAll('.preset').forEach(p=>p.classList.remove('stop')); rd.textContent='0:00'; return; }
+  tEnd=Date.now()+sec*1000; rd.classList.add('run');
+  const ev=window.event; if(ev&&ev.target) ev.target.classList.add('stop');
+  const tick=()=>{
+    let left=Math.round((tEnd-Date.now())/1000);
+    if(left<=0){ left=0; clearInterval(tInt); tInt=null; rd.classList.remove('run'); document.querySelectorAll('.preset').forEach(p=>p.classList.remove('stop')); beep(); }
+    rd.textContent=Math.floor(left/60)+':'+String(left%60).padStart(2,'0');
+  };
+  tick(); tInt=setInterval(tick,250);
+}
+function beep(){
+  try{ const a=new (window.AudioContext||window.webkitAudioContext)(); const o=a.createOscillator(),g=a.createGain();
+    o.connect(g); g.connect(a.destination); o.frequency.value=660; o.type='sine';
+    g.gain.setValueAtTime(.0001,a.currentTime); g.gain.exponentialRampToValueAtTime(.3,a.currentTime+.02);
+    g.gain.exponentialRampToValueAtTime(.0001,a.currentTime+.5); o.start(); o.stop(a.currentTime+.5);
+  }catch(e){}
+}
+
+/* ---------- INIT ---------- */
+renderNav(); renderDay(); renderNotes();
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js').catch(()=>{}); }
+</script>
+</body>
+</html>
