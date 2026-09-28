@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Dad Athlete">
 <link rel="manifest" href="manifest.json">
-<title>Dad Athlete V3.1 — Superman Build</title>
+<title>Dad Athlete V3.9 — Superman Build</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
@@ -137,6 +137,22 @@ body::after{
 .bm-foot{display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--faint); margin-top:5px}
 .bm-none{font-size:12px; color:var(--faint); font-family:'JetBrains Mono',monospace}
 
+/* AM MOBILITY */
+.am-card{background:var(--panel); border:1px solid var(--line); border-radius:15px; margin-bottom:14px; overflow:hidden; animation:rise .4s both}
+.am-card.done{border-color:rgba(76,175,125,.4)}
+.am-head{display:flex; align-items:center; gap:10px; padding:14px 15px; cursor:pointer}
+.am-head .an{font-family:'Oswald',sans-serif; font-weight:600; font-size:15px; flex:1}
+.am-head .at{font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--faint)}
+.am-head .ac{color:var(--ok); font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; letter-spacing:.06em}
+.am-head .ar{color:var(--faint); transition:transform .2s}
+.am-card.open .ar{transform:rotate(90deg)}
+.am-body{display:none; padding:0 15px 12px}
+.am-card.open .am-body{display:block}
+.am-btn{background:var(--panel-2); border:1px solid var(--line); border-radius:10px; color:var(--text); font-family:'Oswald',sans-serif; font-weight:600; font-size:12.5px; letter-spacing:.08em; text-transform:uppercase; padding:11px; cursor:pointer; transition:.15s}
+.am-card.done .am-btn{background:rgba(76,175,125,.12); border-color:rgba(76,175,125,.4); color:var(--ok)}
+.am-full{width:100%; margin-top:8px}
+.vital-log{display:flex; align-items:center; gap:8px; margin-top:10px}
+
 /* NOTES */
 .note{background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--ember); border-radius:12px; padding:15px 16px; margin-bottom:11px; animation:rise .4s both}
 .note h3{font-family:'Oswald',sans-serif; font-weight:600; font-size:15.5px; letter-spacing:.04em; text-transform:uppercase; margin-bottom:6px}
@@ -169,13 +185,14 @@ body::after{
     <div class="hdr-in">
       <div class="brand">
         <h1>Dad Athlete</h1>
-        <span class="v">V3.1</span>
+        <span class="v">V3.9</span>
         <span class="sub">Superman Build</span>
       </div>
       <nav class="tabs">
         <button class="tab on" data-tab="train" onclick="tab('train',this)">Train</button>
         <button class="tab" data-tab="history" onclick="tab('history',this)">History</button>
         <button class="tab" data-tab="bench" onclick="tab('bench',this)">Benchmarks</button>
+        <button class="tab" data-tab="vitals" onclick="tab('vitals',this)">Vitals</button>
         <button class="tab" data-tab="notes" onclick="tab('notes',this)">Doctrine</button>
       </nav>
     </div>
@@ -188,6 +205,7 @@ body::after{
 
   <section id="pane-history" class="pane"><div class="content" id="histContent"></div></section>
   <section id="pane-bench" class="pane"><div class="content" id="benchContent"></div></section>
+  <section id="pane-vitals" class="pane"><div class="content" id="vitalsContent"></div></section>
   <section id="pane-notes" class="pane"><div class="content" id="notesContent"></div></section>
 </div>
 
@@ -207,15 +225,15 @@ const P = [
   { id:'d1', day:'Day 1', name:'Upper A', focus:'Press-led · width & the V-taper', weekday:1,
     blocks:[
       { tag:'Superset A', ss:true, ex:[
-        {id:'strict_press', name:'Strict Press', sr:'4 × 4–6', bench:true, note:'First and fresh. Overhead width is the whole Superman illusion.'},
-        {id:'wtd_pullup',   name:'Weighted Pull-Up', sr:'4 × 5–8', bench:true, note:'Add weight before reps. The lift that builds the taper.'},
+        {id:'strict_press', name:'Strict Press', sr:'4 × 4–6', bench:true, note:'First and fresh. Overhead width is the whole Superman illusion. Stalled? Every 3rd week, sub a 2-sec pause at the sticking point on set 1 instead of chasing top reps — that\'s a mid-range strength gap, not a lockout one.'},
+        {id:'wtd_pullup',   name:'Weighted Ring Pull-Up', sr:'4 × 5–8', bench:true, note:'Rings on the same bar. Rotating grip is kinder to the shoulder than a fixed bar — same weight tracking, same lift, just a friendlier path. Add weight before reps.'},
       ]},
       { tag:'Superset B', ss:true, ex:[
-        {id:'flat_bench', name:'Flat Bench Press', sr:'3 × 6–8', bench:true, note:'The horizontal press. Mid and lower chest the inclines miss.'},
-        {id:'bb_row',     name:'Bent-Over Row', sr:'3 × 8–10', note:'Brace hard, row to the sternum. Back thickness.'},
+        {id:'bb_row',     name:'Bent-Over Row', sr:'3 × 8–10', note:'Brace hard, row to the sternum. Fires the rear chain before the press.'},
+        {id:'inc_bench', name:'Incline Bench Press', sr:'4 × 6–8', note:'30°. Moved here so the day needs only one heavy barbell ramp — Flat Bench now lives on Day 3.'},
       ]},
       { tag:'Superset C', ss:true, ex:[
-        {id:'lat_raise1', name:'DB Lateral Raise', sr:'3 × 12–15', note:'Slow drop. 12.5kg — chase reps, then add a tempo pause.'},
+        {id:'lat_raise1', name:'DB Lateral Raise', sr:'3 × 12–15', note:'Slow drop. 12.5kg — work the Overload Ladder (reps → pause → slow eccentric → partials → band-stacked finisher).'},
         {id:'bb_curl',    name:'Barbell Curl', sr:'3 × 8–12', note:'Strict. No swing.'},
         {id:'face_pull1', name:'Face Pull', sr:'3 × 15–20', note:'Band or rope, pull to forehead, elbows high. Rear delt and posture — the desk-job fix.'},
       ]},
@@ -226,27 +244,29 @@ const P = [
         {id:'front_sq', name:'Front Squat', sr:'4 × 4–6', bench:true, note:'Upright, back-friendly. The squat benchmark.'},
         {id:'rdl',      name:'Romanian Deadlift', sr:'3 × 8–10', note:'Hinge. Load the hamstring stretch, control the descent.'},
       ]},
-      { tag:'Hypertrophy', ex:[
-        {id:'bulg',     name:'Bulgarian Split Squat', sr:'3 × 8–10 / leg', note:'12.5kg. 3-sec lower, pause at the bottom. Fixes left/right gaps.'},
+      { tag:'Superset B', ss:true, ex:[
+        {id:'bulg',     name:'Barbell Bulgarian Split Squat', sr:'3 × 8–10 / leg', note:'Back-racked. Escapes the 12.5kg DB ceiling entirely — bar is already out from Front Squat. 3-sec lower, pause at the bottom. Supersetted with ham curl to claw back per-leg time.'},
         {id:'ham_curl', name:'Slider / Towel Ham Curl', sr:'3 × 8–12', note:'Heels on towels, bridge up, curl in. Single-leg when it gets easy.'},
+      ]},
+      { tag:'Hypertrophy', ex:[
         {id:'calf_std', name:'Standing Calf Raise', sr:'4 × 12–15', note:'Barbell on back. Full stretch, hard pause at the top.'},
         {id:'hlr',      name:'Hanging Leg Raise', sr:'3 × 12–15', note:'No swing. The eccentric builds the blocky midsection.'},
       ]},
     ]},
-  { id:'d3', day:'Day 3', name:'Upper B', focus:'Hypertrophy-led · shape & detail', weekday:4,
+  { id:'d3', day:'Day 3', name:'Upper B', focus:'Bench-led · shape & detail', weekday:4,
     blocks:[
       { tag:'Superset A', ss:true, ex:[
-        {id:'inc_bench', name:'Incline Bench Press', sr:'4 × 6–8', note:'30°. The upper-chest shelf.'},
-        {id:'cs_row',    name:'Chest-Supported / Inverted Row', sr:'3 × 10–12', note:'Different angle from Day 1. Mid-back detail.'},
+        {id:'cs_row',    name:'Ring Row', sr:'3 × 10–12', note:'Feet out = harder. No ceiling, rotating grip is kinder to the shoulder than a fixed bar — fires the rear chain before the heavy press.'},
+        {id:'flat_bench', name:'Flat Bench Press', sr:'3 × 6–8', bench:true, note:'Fresh, heavy — the day\'s only barbell ramp. Dip below shares this warm-up; same horizontal-press family.'},
       ]},
       { tag:'Superset B', ss:true, ex:[
-        {id:'wtd_dip',  name:'Weighted Dip', sr:'3 × 8–10', note:'Lean forward for chest, upright for triceps.'},
+        {id:'wtd_dip',  name:'Ring Dip', sr:'3 × 8–10', note:'Lean forward for chest, upright for triceps. Add weight via belt, or just lean deeper/elevate feet — a second, ceiling-free progression axis on top of load.'},
         {id:'inc_curl', name:'Incline DB Curl', sr:'3 × 10–12', note:'Arms behind the body — bicep loaded at full stretch.'},
       ]},
       { tag:'Superset C', ss:true, ex:[
-        {id:'lat_raise2', name:'DB Lateral Raise', sr:'4 × 12–15', note:'Second weekly hit — 7 sets total across the week.'},
-        {id:'oh_ext',     name:'Overhead Triceps Extension', sr:'3 × 10–12', note:'Long head, loaded at the stretch. The bulk of the arm.'},
-        {id:'rear_delt_fly', name:'Rear Delt Fly', sr:'3 × 12–15', note:'Chest-supported or bent-over, DBs. Second posterior-shoulder hit of the week.'},
+        {id:'lat_raise2', name:'DB Lateral Raise', sr:'6 × 12–15', note:'Second weekly hit — 9 sets total across the week. Last 2 sets: DB to clean failure, drop it, finish with the red band for 4-6 more reps. Same station, no added time.'},
+        {id:'oh_ext',     name:'Barbell Overhead Triceps Extension', sr:'3 × 10–12', note:'Seated, back braced against the bench — no lower-back arch sneaking in. Thumbs wrapped, never a false grip — this bar sits over your head solo, no spotter. Stop 1–2 reps shy of failure, always. Wrists complain? Swap to Ring Extension.'},
+        {id:'rear_delt_fly', name:'Rear Delt Fly', sr:'3 × 12–15', note:'Chest-supported or bent-over, DBs. Second posterior-shoulder hit of the week — same Overload Ladder once 15 reps clears easily.'},
       ]},
     ]},
   { id:'d4', day:'Day 4', name:'Lower B + Carry', focus:'Hinge & carry · the function day', weekday:5,
@@ -254,11 +274,12 @@ const P = [
       { tag:'Strength', ex:[
         {id:'deadlift', name:'Deadlift', sr:'4 × 4–6', bench:true, note:'Fresh — nothing heavy before it. The pick-Hudson-off-the-floor lift.'},
         {id:'gob_sq',   name:'Heel-Elevated Goblet Squat', sr:'3 × 12–15', note:'12.5kg at the chest, heels on a plate. Quad volume, low spinal cost.'},
-        {id:'hip_thr',  name:'Hip Thrust', sr:'3 × 10–12', note:'Squeeze hard, 2-sec hold at the top.'},
+        {id:'hip_thr',  name:'Barbell Hip Thrust', sr:'3 × 10–12', note:'Bar across the hips, back on the bench, pad it. 12.5kg badly undertrains glutes here — the bar is the correct tool. Squeeze hard, 2-sec hold at the top.'},
         {id:'calf_sl',  name:'Single-Leg Calf Raise', sr:'3 × 12–15 / leg', note:'DB in hand. Balance plus full stretch.'},
       ]},
-      { tag:'Carry · this IS the conditioning', ex:[
+      { tag:'Carry + Core · this IS the conditioning', ss:true, ex:[
         {id:'farmer', name:"Farmer's Carry", sr:'4 × 30 m', carry:true, note:'Heavy. Rigid torso, grip and go. Builds traps, core, grip — and looks strong.'},
+        {id:'pallof', name:'Band Pallof Press', sr:'2 × 10–12 / side', note:'Anti-rotation. Slots into the carry\'s walk-back and rest — no extra station, no extra time.'},
       ]},
     ]},
 ];
@@ -276,6 +297,13 @@ const RECOVERY = {
 };
 
 const BENCH_IDS = ['strict_press','wtd_pullup','flat_bench','front_sq','deadlift'];
+const AM_MOBILITY = [
+  {n:'World\'s Greatest Stretch', d:'Both sides. Hip + t-spine rotation together.', t:'60 sec'},
+  {n:'Ankle Rock', d:'Knee-to-wall, both sides. Full dorsiflexion, heel stays down.', t:'45 sec'},
+  {n:'Cat-Cow to Thread the Needle', d:'Slow, both sides on the thread.', t:'60 sec'},
+  {n:'Band Pass-Through', d:'Wide grip, straight arms, front to back over the head.', t:'60 sec'},
+  {n:'Deep Squat Hold + Reach', d:'Heels down, chest up, rotate and reach overhead each side.', t:'60 sec'},
+];
 const SETS_FOR = sr => { const m = sr.match(/^(\d+)/); return m ? +m[1] : 3; };
 const KEY = 'da3';
 const todayStr = () => new Date().toISOString().split('T')[0];
@@ -290,6 +318,7 @@ function tab(name, btn){
   window.scrollTo(0,0);
   if(name==='history') renderHistory();
   if(name==='bench') renderBench();
+  if(name==='vitals') renderVitals();
 }
 
 /* ---------- DAY NAV ---------- */
@@ -310,21 +339,75 @@ function renderNav(){
   });
 }
 
-/* ---------- LAST SESSION LOOKUP ---------- */
-function lastSession(dayId, exId, beforeDate){
+/* ---------- WARM-UP RAMP ---------- */
+const RAMP_IDS = ['strict_press','flat_bench','front_sq','deadlift'];
+function warmupRamp(ex, dayId, date){
+  if(!RAMP_IDS.includes(ex.id)) return null;
+  const last=lastSession(dayId, ex.id, date); if(!last) return null;
+  const weights=last.sets.map(s=>parseFloat(s[0])).filter(x=>!isNaN(x)&&x>0);
+  if(!weights.length) return null;
+  const top=Math.max(...weights);
+  return [40,60,80].map(p=>Math.round((top*p/100)/2.5)*2.5).filter(w=>w>0);
+}
+
+/* ---------- DELOAD WEEK ---------- */
+function firstLoggedDate(){
   let dates=[];
   for(let i=0;i<localStorage.length;i++){
     const k=localStorage.key(i);
-    if(k.startsWith(`${KEY}_${dayId}_`)){
-      const date=k.split('_').pop();
-      if(date<beforeDate) dates.push(date);
-    }
+    if(!k.startsWith(`${KEY}_`)) continue;
+    const d=k.split('_').pop();
+    if(/^\d{4}-\d{2}-\d{2}$/.test(d)) dates.push(d);
   }
-  dates.sort().reverse();
-  for(const date of dates){
+  return dates.length ? dates.sort()[0] : null;
+}
+function currentWeekNumber(){
+  const first=firstLoggedDate(); if(!first) return null;
+  const days=Math.floor((new Date(todayStr()+'T00:00')-new Date(first+'T00:00'))/86400000);
+  return Math.floor(days/7)+1;
+}
+function isDeloadWeek(){ const wk=currentWeekNumber(); return wk!==null && wk%6===0; }
+function deloadBanner(){
+  if(!isDeloadWeek()) return '';
+  return `<div class="am-card done" style="border-color:rgba(232,181,74,.4)"><div class="am-head" style="cursor:default"><div class="an">Deload Week</div><div class="ac" style="color:var(--gold)">HALF SETS</div></div><div class="am-body" style="display:block"><p style="color:var(--muted);font-size:13px;line-height:1.5">Week ${currentWeekNumber()} — same weights, half the sets on everything. No exceptions.</p></div></div>`;
+}
+
+/* ---------- AM MOBILITY ---------- */
+function renderAMMobility(){
+  const date=todayStr();
+  const done = localStorage.getItem(`${KEY}_mob_${date}`)==='1';
+  let rows='';
+  AM_MOBILITY.forEach(it=>{ rows+=`<div class="mob-row"><div><div class="mn">${it.n}</div><div class="md">${it.d}</div></div><div class="mt">${it.t}</div></div>`; });
+  return `<div class="am-card${done?' done':' open'}" id="amCard">
+    <div class="am-head" onclick="document.getElementById('amCard').classList.toggle('open')">
+      <div class="an">AM Mobility</div>
+      ${done?'<div class="ac">✓ DONE TODAY</div>':'<div class="at">5 MIN · DAILY</div>'}
+      <div class="ar">›</div>
+    </div>
+    <div class="am-body">${rows}
+      <button class="am-btn am-full" onclick="event.stopPropagation(); markMobilityDone()">${done?'Done ✓ — tap to log again':'Mark Done'}</button>
+    </div>
+  </div>`;
+}
+function markMobilityDone(){
+  localStorage.setItem(`${KEY}_mob_${todayStr()}`,'1');
+  renderDay();
+}
+
+/* ---------- LAST SESSION LOOKUP ---------- */
+function lastSession(dayId, exId, beforeDate){
+  let hits=[];
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i);
+    if(!k.startsWith(`${KEY}_`)) continue;
+    const parts=k.split('_'); const date=parts.pop(); const kDayId=parts.slice(1).join('_');
+    if(date<beforeDate) hits.push({kDayId,date});
+  }
+  hits.sort((a,b)=>b.date.localeCompare(a.date));
+  for(const h of hits){
     try{
-      const data=JSON.parse(localStorage.getItem(sKey(dayId,date)));
-      if(data && data[exId] && data[exId].some(s=>s[0]||s[1])) return {date, sets:data[exId]};
+      const data=JSON.parse(localStorage.getItem(sKey(h.kDayId,h.date)));
+      if(data && data[exId] && data[exId].some(s=>s[0]||s[1])) return {date:h.date, sets:data[exId]};
     }catch(e){}
   }
   return null;
@@ -356,6 +439,9 @@ function renderDay(){
 
   let h=`<div class="dayhead"><div class="lbl">${day.day} · ${day.focus.split('·')[0].trim()}</div>
     <h2>${day.name}</h2><div class="foc">${day.focus}</div></div>`;
+  h+=deloadBanner();
+  h+=`<div style="color:var(--muted);font-size:12.5px;line-height:1.5;margin:-6px 0 14px;padding:0 2px">60–90 sec light movement first — jog on the spot, jumping jacks, anything — before AM Mobility below. 0500 means you're lifting cold; raise body temp before the ramp, not after.</div>`;
+  h+=renderAMMobility();
   let delay=0;
   day.blocks.forEach(bl=>{
     h+=`<div class="block-tag" style="animation-delay:${delay}s"><span>${bl.tag}</span>${bl.ss?'<span class="ss-pill">SUPERSET</span>':''}</div>`;
@@ -374,12 +460,14 @@ function renderDay(){
         </div>`;
       }
       const prog=progressCheck(ex,day.id,date);
+      const ramp=warmupRamp(ex,day.id,date);
       h+=`<div class="ex ${ex.bench?'bench':''}" style="animation-delay:${delay}s">
         <div class="ex-top">
           <div class="ex-name">${ex.name}${ex.bench?' <span class="star">★</span>':''}</div>
           <div class="ex-meta">${ex.sr}</div>
         </div>
         <div class="ex-note">${ex.note}</div>
+        ${ramp?`<div class="ex-last"><b>RAMP</b> ${ramp.join('kg → ')}kg → work</div>`:''}
         ${last?`<div class="ex-last"><b>LAST</b> ${fmtSets(last.sets)} <span style="color:var(--faint)">· ${last.date.slice(5)}</span></div>`:''}
         ${prog?`<div class="prog">↑ ${prog==='weight'?'ADD +2.5 KG':'ADD REPS · THEN PAUSE'}</div>`:''}
         <div class="sets">${rows}</div>
@@ -395,8 +483,10 @@ function renderDay(){
 function renderRecovery(which){
   const c=document.getElementById('dayContent');
   const r=RECOVERY[which];
-  let h=`<div class="dayhead"><div class="lbl">${which==='wed'?'Mid-week':'Weekend'}</div><h2>${r.title.split('—')[1].trim()}</h2></div>
-    <div class="rest-card"><h3>${r.title.split('—')[0].trim()}</h3><p>${r.sub}</p></div>`;
+  let h=`<div class="dayhead"><div class="lbl">${which==='wed'?'Mid-week':'Weekend'}</div><h2>${r.title.split('—')[1].trim()}</h2></div>`;
+  h+=deloadBanner();
+  h+=renderAMMobility();
+  h+=`<div class="rest-card"><h3>${r.title.split('—')[0].trim()}</h3><p>${r.sub}</p></div>`;
   if(r.items.length){
     h+=`<div class="rest-card">`;
     r.items.forEach(it=>{ h+=`<div class="mob-row"><div><div class="mn">${it.n}</div><div class="md">${it.d}</div></div><div class="mt">${it.t}</div></div>`; });
@@ -454,17 +544,14 @@ function renderHistory(){
 /* ---------- BENCHMARKS ---------- */
 function benchHistory(exId){
   let pts=[];
-  for(const d of P) for(const b of d.blocks) for(const e of b.ex){
-    if(e.id!==exId) continue;
-    for(let i=0;i<localStorage.length;i++){
-      const k=localStorage.key(i);
-      if(k.startsWith(`${KEY}_${d.id}_`)){
-        const date=k.split('_').pop();
-        try{ const data=JSON.parse(localStorage.getItem(k));
-          if(data[exId]){ const ws=data[exId].map(s=>parseFloat(s[0])).filter(x=>!isNaN(x)); if(ws.length) pts.push({date,w:Math.max(...ws)}); }
-        }catch(e){}
-      }
-    }
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i);
+    if(!k.startsWith(`${KEY}_`)) continue;
+    const date=k.split('_').pop();
+    try{
+      const data=JSON.parse(localStorage.getItem(k));
+      if(data[exId]){ const ws=data[exId].map(s=>parseFloat(s[0])).filter(x=>!isNaN(x)); if(ws.length) pts.push({date,w:Math.max(...ws)}); }
+    }catch(e){}
   }
   pts.sort((a,b)=>a.date.localeCompare(b.date));
   return pts;
@@ -499,6 +586,53 @@ function renderBench(){
   c.innerHTML=h;
 }
 
+/* ---------- VITALS (DURABILITY) ---------- */
+const VITAL_DEFS = [
+  {id:'ovh_reach',  name:'Overhead Reach Comfort', unit:'/10', hint:'Arms overhead against a wall. 10 = clean through the whole range, no pinch anywhere.'},
+  {id:'deep_squat', name:'Deep Squat Hold',        unit:'sec', hint:'Heels flat, chest up — hold at the bottom.'},
+  {id:'dead_hang',  name:'Dead Hang',              unit:'sec', hint:'Full passive hang, grip only, shoulders relaxed.'},
+  {id:'resting_hr', name:'Resting Heart Rate',     unit:'bpm', hint:'First thing on waking, before you\'re up and moving.'},
+];
+const vKey = (id,date) => `${KEY}_vital_${id}_${date}`;
+function vitalHistory(id){
+  let pts=[]; const prefix=`${KEY}_vital_${id}_`;
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i);
+    if(!k.startsWith(prefix)) continue;
+    const v=parseFloat(localStorage.getItem(k));
+    if(!isNaN(v)) pts.push({date:k.slice(prefix.length), w:v});
+  }
+  pts.sort((a,b)=>a.date.localeCompare(b.date));
+  return pts;
+}
+function renderVitals(){
+  const c=document.getElementById('vitalsContent');
+  let h=`<div class="dayhead"><div class="lbl">Function, Not Just Weight</div><h2>Vitals</h2><div class="foc">The barbell numbers say nothing about whether it still works. Log these whenever you think of it — monthly is plenty, no fixed schedule.</div></div>`;
+  VITAL_DEFS.forEach(v=>{
+    const pts=vitalHistory(v.id);
+    const latest = pts.length?pts[pts.length-1].w:null;
+    h+=`<div class="bm"><div class="bm-top"><div class="bm-name">${v.name}</div>
+      <div class="bm-best">${latest!=null?latest:'—'}${latest!=null?` <small>${v.unit}</small>`:''}</div></div>
+      <div class="bm-none" style="margin-bottom:8px">${v.hint}</div>`;
+    if(pts.length>=2){
+      h+=sparkline(pts)+`<div class="bm-foot"><span>${pts[0].date.slice(5)} · ${pts[0].w}${v.unit}</span><span>${pts[pts.length-1].date.slice(5)} · ${pts[pts.length-1].w}${v.unit}</span></div>`;
+    } else if(pts.length===1){
+      h+=`<div class="bm-none">Log it again next time to see the trend.</div>`;
+    }
+    h+=`<div class="vital-log"><div class="fld"><input type="number" inputmode="decimal" id="vin_${v.id}" placeholder="${v.unit}"></div>
+      <button class="am-btn" onclick="saveVital('${v.id}')">Log</button></div>`;
+    h+=`</div>`;
+  });
+  c.innerHTML=h;
+}
+function saveVital(id){
+  const inp=document.getElementById('vin_'+id);
+  const v=parseFloat(inp.value);
+  if(isNaN(v)) return;
+  localStorage.setItem(vKey(id, todayStr()), String(v));
+  renderVitals();
+}
+
 /* ---------- DOCTRINE ---------- */
 function renderNotes(){
   document.getElementById('notesContent').innerHTML=`
@@ -510,9 +644,14 @@ function renderNotes(){
     <div class="principle"><div class="pn">3</div><div class="pt">Does it fit <b>the hour</b>?</div></div>
     <div class="principle"><div class="pn">4</div><div class="pt">Can you <b>recover</b> from it on broken sleep?</div></div>
     <p style="margin-top:9px">If a new idea fails any one of these, it's drift. Cut it.</p></div>
-  <div class="note"><h3 class="gold">The Benchmark Spine ★</h3><p>Strict Press, Weighted Pull-Up, Flat Bench, Front Squat, Deadlift. Progress these <b>+2.5kg when you clear the top of every set</b>; repeat the weight on a miss. Everything else is accessory — add reps, then a tempo pause, since the dumbbells cap at 12.5kg.</p></div>
+  <div class="note"><h3>One Heavy Ramp Per Day</h3><p>Each day carries exactly one near-maximal barbell lift needing a full progressive warm-up (Strict Press / Front Squat / Flat Bench / Deadlift). Two different-plane heavy lifts in one session means two full ramps — that's 10+ minutes gone before a single working set, the single biggest threat to the 60-minute ceiling. If a lift ever moves days again, keep this rule intact.</p></div>
+  <div class="note"><h3>Durability Is The Floor, Not A Third Wheel</h3><p>Strength and hypertrophy get pushed hard. Durability doesn't compete with them for volume — it <b>vetoes</b> anything that raises injury risk without a real payoff. A missed top set on a benchmark lift never gets a forced rep — it just repeats next time. That gate is the safety valve, not a suggestion.</p></div>
+  <div class="note"><h3>The Overload Ladder</h3><p>The dumbbells cap at 12.5kg permanently. "Add reps" runs out of road fast, so every capped accessory (lateral raise, curls, rear delt fly, split squat, goblet squat) climbs this ladder in order: <b>1)</b> add reps to the top of the range <b>2)</b> add a 2–3 sec pause at peak contraction <b>3)</b> slow the eccentric to 4–6 sec <b>4)</b> lengthened partials — small reps at the deepest stretch, where the tension is highest <b>5)</b> band-stacked finisher.</p></div>
+  <div class="note"><h3 class="gold">The Benchmark Spine ★</h3><p>Strict Press, Weighted Pull-Up, Flat Bench, Front Squat, Deadlift. Progress these <b>+2.5kg when you clear the top of every set</b>; repeat the weight on a miss. Everything else is accessory — add reps, then a tempo pause, since the dumbbells cap at 12.5kg.</p><p>Once +2.5kg stops clearing on Strict Press, Weighted Pull-Up or Bench — a real plateau, not one bad session — switch those three to <b>1.25kg microplates</b>. A flat +2.5kg is a much bigger relative jump on an upper-body press than on Front Squat or Deadlift, and it's the likely reason a lift stalls for weeks while everything else keeps climbing.</p></div>
+  <div class="note"><h3>The Deload</h3><p>Every 6th week: same weights, <b>cut every exercise to half its sets</b>. No exceptions, no "feeling good so I'll push through." The app now flags this automatically, counting from your first logged session — you don't have to remember it, which is the only way it actually happens every time.</p></div>
   <div class="note"><h3>Function Is Built In</h3><p>The deadlift and the carries <b>are</b> the fatherhood training — lift him, haul the buggy, carry him on your shoulders. And they auto-scale: as Hudson gets heavier, the bar follows. The function updates itself for free.</p></div>
   <div class="note"><h3>What Got Cut</h3><p>Box jumps, lactate intervals, power cleans, the structured Zone 2 mandate, the second heavy squat. None served the build or bedtime — it was audit-drift. Conditioning is now just the carries and the Saturday walk.</p></div>
+  <div class="note"><h3>Vitals & AM Mobility</h3><p>Every benchmark lift can climb while the actual goal — still working, still durable — quietly slips. <b>Vitals</b> tracks that directly: overhead comfort, deep squat hold, dead hang, resting heart rate. Log them whenever, watch the trend, not the single number. <b>AM Mobility</b> is 5 minutes, every day, lifting or not — the cheapest durability insurance there is, and it's separate from the shoulder rehab track on purpose.</p></div>
   <div class="note"><h3>The Mirror Lies</h3><p>Track the lifts, not the scale. Bodyweight drifts toward 83kg <b>slowly</b>. Nutrition stays your domain, deliberately out of this app.</p></div>`;
 }
 
