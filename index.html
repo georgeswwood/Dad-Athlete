@@ -14,12 +14,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --ink:#0b0b0d; --panel:#141417; --panel-2:#1a1a1f; --raised:#202027;
-  --line:#2a2a31; --line-2:#34343d;
-  --text:#f4f3f0; --muted:#9a9aa2; --faint:#6a6a73;
-  --ember:#ff6a1a; --ember-dim:#c2491a; --ember-bg:rgba(255,106,26,.10);
-  --gold:#e8b54a; --gold-bg:rgba(232,181,74,.10);
-  --steel:#5fb4d6;
+  --ink:#0a0e1a; --panel:#10161f; --panel-2:#141c28; --raised:#1a2432;
+  --line:#202c3d; --line-2:#2a3a52;
+  --text:#f2f4f8; --muted:#93a0b3; --faint:#5a6b82;
+  --ember:#e21f26; --ember-dim:#a3161c; --ember-bg:rgba(226,31,38,.10);
+  --gold:#f0c23e; --gold-bg:rgba(240,194,62,.10);
+  --steel:#5a8ee8;
   --ok:#4caf7d;
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -32,7 +32,7 @@ body{
 }
 body::before{
   content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
-  background:radial-gradient(120% 60% at 50% -10%, rgba(255,106,26,.10), transparent 60%);
+  background:radial-gradient(120% 60% at 50% -10%, rgba(226,31,38,.10), transparent 60%);
 }
 body::after{
   content:''; position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.035;
@@ -73,11 +73,11 @@ body::after{
 .block-tag{display:flex; align-items:center; gap:9px; margin:22px 0 11px; animation:rise .4s both}
 .block-tag span{font-family:'Oswald',sans-serif; font-weight:600; font-size:11.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--faint)}
 .block-tag::after{content:''; flex:1; height:1px; background:var(--line)}
-.ss-pill{font-family:'JetBrains Mono',monospace; font-size:9px; font-weight:700; letter-spacing:.08em; color:var(--steel); border:1px solid rgba(95,180,214,.4); border-radius:4px; padding:1px 5px}
+.ss-pill{font-family:'JetBrains Mono',monospace; font-size:9px; font-weight:700; letter-spacing:.08em; color:var(--steel); border:1px solid rgba(90,142,232,.4); border-radius:4px; padding:1px 5px}
 
 /* EXERCISE CARD */
 .ex{background:var(--panel); border:1px solid var(--line); border-radius:15px; padding:15px 15px 6px; margin-bottom:11px; animation:rise .45s both}
-.ex.bench{border-color:rgba(232,181,74,.32); background:linear-gradient(180deg,var(--gold-bg),var(--panel) 60%)}
+.ex.bench{border-color:rgba(240,194,62,.32); background:linear-gradient(180deg,var(--gold-bg),var(--panel) 60%)}
 .ex-top{display:flex; align-items:flex-start; gap:10px}
 .ex-name{font-family:'Oswald',sans-serif; font-weight:600; font-size:18px; letter-spacing:.01em; line-height:1.12; flex:1}
 .star{color:var(--gold); font-size:13px; flex-shrink:0; margin-top:3px}
@@ -100,7 +100,7 @@ body::after{
 .saved.show{opacity:1}
 
 .savebar{position:sticky; bottom:calc(76px + env(safe-area-inset-bottom)); z-index:20; padding:10px 0 4px; margin-top:6px}
-.savebtn{width:100%; background:var(--ember); color:#100a05; border:none; border-radius:13px; font-family:'Oswald',sans-serif; font-weight:700; font-size:15px; letter-spacing:.1em; text-transform:uppercase; padding:15px; cursor:pointer; box-shadow:0 8px 24px rgba(255,106,26,.28); transition:.15s}
+.savebtn{width:100%; background:var(--ember); color:#100a05; border:none; border-radius:13px; font-family:'Oswald',sans-serif; font-weight:700; font-size:15px; letter-spacing:.1em; text-transform:uppercase; padding:15px; cursor:pointer; box-shadow:0 8px 24px rgba(226,31,38,.28); transition:.15s}
 .savebtn:active{transform:scale(.985)}
 
 /* REST / RECOVERY DAY */
@@ -128,7 +128,7 @@ body::after{
 .empty{text-align:center; color:var(--faint); padding:50px 20px; font-size:13.5px; line-height:1.6}
 
 /* BENCHMARKS */
-.bm{background:var(--panel); border:1px solid rgba(232,181,74,.28); border-radius:15px; padding:16px; margin-bottom:11px; animation:rise .4s both}
+.bm{background:var(--panel); border:1px solid rgba(240,194,62,.28); border-radius:15px; padding:16px; margin-bottom:11px; animation:rise .4s both}
 .bm-top{display:flex; align-items:baseline; gap:10px; margin-bottom:10px}
 .bm-name{font-family:'Oswald',sans-serif; font-weight:600; font-size:17px; flex:1}
 .bm-best{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:20px; color:var(--gold)}
@@ -369,7 +369,7 @@ function currentWeekNumber(){
 function isDeloadWeek(){ const wk=currentWeekNumber(); return wk!==null && wk%6===0; }
 function deloadBanner(){
   if(!isDeloadWeek()) return '';
-  return `<div class="am-card done" style="border-color:rgba(232,181,74,.4)"><div class="am-head" style="cursor:default"><div class="an">Deload Week</div><div class="ac" style="color:var(--gold)">HALF SETS</div></div><div class="am-body" style="display:block"><p style="color:var(--muted);font-size:13px;line-height:1.5">Week ${currentWeekNumber()} — same weights, half the sets on everything. No exceptions.</p></div></div>`;
+  return `<div class="am-card done" style="border-color:rgba(240,194,62,.4)"><div class="am-head" style="cursor:default"><div class="an">Deload Week</div><div class="ac" style="color:var(--gold)">HALF SETS</div></div><div class="am-body" style="display:block"><p style="color:var(--muted);font-size:13px;line-height:1.5">Week ${currentWeekNumber()} — same weights, half the sets on everything. No exceptions.</p></div></div>`;
 }
 
 /* ---------- AM MOBILITY ---------- */

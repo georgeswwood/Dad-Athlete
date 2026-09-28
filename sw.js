@@ -1,4 +1,4 @@
-const CACHE = 'dad-athlete-v3-9-1';
+const CACHE = 'dad-athlete-v3-9-2';
 const ASSETS = [
   './', './index.html', './manifest.json',
   './icon-192.png', './icon-512.png', './icon-maskable-512.png'
