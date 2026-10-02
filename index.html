@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Dad Athlete">
 <link rel="manifest" href="manifest.json">
-<title>Dad Athlete V3.9 — Superman Build</title>
+<title>Dad Athlete V3.9.1 — Superman Build</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
@@ -185,7 +185,7 @@ body::after{
     <div class="hdr-in">
       <div class="brand">
         <h1>Dad Athlete</h1>
-        <span class="v">V3.9</span>
+        <span class="v">V3.9.1</span>
         <span class="sub">Superman Build</span>
       </div>
       <nav class="tabs">
@@ -351,6 +351,9 @@ function warmupRamp(ex, dayId, date){
 }
 
 /* ---------- DELOAD WEEK ---------- */
+/* Weeks run Mon–Sun. Week 1 starts on the first Monday on or after the first
+   logged session, so the deload banner covers the whole Mon–Fri training week
+   instead of rolling over mid-week on the weekday of the first session. */
 function firstLoggedDate(){
   let dates=[];
   for(let i=0;i<localStorage.length;i++){
@@ -363,10 +366,13 @@ function firstLoggedDate(){
 }
 function currentWeekNumber(){
   const first=firstLoggedDate(); if(!first) return null;
-  const days=Math.floor((new Date(todayStr()+'T00:00')-new Date(first+'T00:00'))/86400000);
-  return Math.floor(days/7)+1;
+  const f=new Date(first+'T00:00');
+  const toMon=(8-f.getDay())%7;                       // days until the next Monday (0 if already Monday)
+  const start=new Date(f.getFullYear(),f.getMonth(),f.getDate()+toMon);
+  const days=Math.round((new Date(todayStr()+'T00:00')-start)/86400000);
+  return days<0 ? 0 : Math.floor(days/7)+1;           // 0 = the partial week before week 1
 }
-function isDeloadWeek(){ const wk=currentWeekNumber(); return wk!==null && wk%6===0; }
+function isDeloadWeek(){ const wk=currentWeekNumber(); return wk!==null && wk>0 && wk%6===0; }
 function deloadBanner(){
   if(!isDeloadWeek()) return '';
   return `<div class="am-card done" style="border-color:rgba(240,194,62,.4)"><div class="am-head" style="cursor:default"><div class="an">Deload Week</div><div class="ac" style="color:var(--gold)">HALF SETS</div></div><div class="am-body" style="display:block"><p style="color:var(--muted);font-size:13px;line-height:1.5">Week ${currentWeekNumber()} — same weights, half the sets on everything. No exceptions.</p></div></div>`;
@@ -648,7 +654,7 @@ function renderNotes(){
   <div class="note"><h3>Durability Is The Floor, Not A Third Wheel</h3><p>Strength and hypertrophy get pushed hard. Durability doesn't compete with them for volume — it <b>vetoes</b> anything that raises injury risk without a real payoff. A missed top set on a benchmark lift never gets a forced rep — it just repeats next time. That gate is the safety valve, not a suggestion.</p></div>
   <div class="note"><h3>The Overload Ladder</h3><p>The dumbbells cap at 12.5kg permanently. "Add reps" runs out of road fast, so every capped accessory (lateral raise, curls, rear delt fly, split squat, goblet squat) climbs this ladder in order: <b>1)</b> add reps to the top of the range <b>2)</b> add a 2–3 sec pause at peak contraction <b>3)</b> slow the eccentric to 4–6 sec <b>4)</b> lengthened partials — small reps at the deepest stretch, where the tension is highest <b>5)</b> band-stacked finisher.</p></div>
   <div class="note"><h3 class="gold">The Benchmark Spine ★</h3><p>Strict Press, Weighted Pull-Up, Flat Bench, Front Squat, Deadlift. Progress these <b>+2.5kg when you clear the top of every set</b>; repeat the weight on a miss. Everything else is accessory — add reps, then a tempo pause, since the dumbbells cap at 12.5kg.</p><p>Once +2.5kg stops clearing on Strict Press, Weighted Pull-Up or Bench — a real plateau, not one bad session — switch those three to <b>1.25kg microplates</b>. A flat +2.5kg is a much bigger relative jump on an upper-body press than on Front Squat or Deadlift, and it's the likely reason a lift stalls for weeks while everything else keeps climbing.</p></div>
-  <div class="note"><h3>The Deload</h3><p>Every 6th week: same weights, <b>cut every exercise to half its sets</b>. No exceptions, no "feeling good so I'll push through." The app now flags this automatically, counting from your first logged session — you don't have to remember it, which is the only way it actually happens every time.</p></div>
+  <div class="note"><h3>The Deload</h3><p>Every 6th week: same weights, <b>cut every exercise to half its sets</b>. No exceptions, no "feeling good so I'll push through." The app flags this automatically for the whole Mon–Fri week, counting from the first Monday on or after your first logged session — you don't have to remember it, which is the only way it actually happens every time.</p></div>
   <div class="note"><h3>Function Is Built In</h3><p>The deadlift and the carries <b>are</b> the fatherhood training — lift him, haul the buggy, carry him on your shoulders. And they auto-scale: as Hudson gets heavier, the bar follows. The function updates itself for free.</p></div>
   <div class="note"><h3>What Got Cut</h3><p>Box jumps, lactate intervals, power cleans, the structured Zone 2 mandate, the second heavy squat. None served the build or bedtime — it was audit-drift. Conditioning is now just the carries and the Saturday walk.</p></div>
   <div class="note"><h3>Vitals & AM Mobility</h3><p>Every benchmark lift can climb while the actual goal — still working, still durable — quietly slips. <b>Vitals</b> tracks that directly: overhead comfort, deep squat hold, dead hang, resting heart rate. Log them whenever, watch the trend, not the single number. <b>AM Mobility</b> is 5 minutes, every day, lifting or not — the cheapest durability insurance there is, and it's separate from the shoulder rehab track on purpose.</p></div>
