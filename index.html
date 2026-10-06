@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Dad Athlete">
 <link rel="manifest" href="manifest.json">
-<title>Dad Athlete V3.9.1 — Superman Build</title>
+<title>Dad Athlete V3.9.2 — Superman Build</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
@@ -175,6 +175,26 @@ body::after{
 .preset:active{background:var(--ember-bg); border-color:var(--ember)}
 .preset.stop{background:var(--ember-bg); border-color:var(--ember); color:var(--ember)}
 
+
+/* REHAB MODE */
+.rh{border-color:rgba(90,142,232,.45)}
+.rh .am-head .an{color:var(--steel)}
+.rh-p{color:var(--muted); font-size:13px; line-height:1.55; margin-bottom:2px}
+.rh-p b{color:var(--text)}
+.rh-sub{font-family:'Oswald',sans-serif; font-weight:600; font-size:11.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--faint); margin:16px 0 4px}
+.chk{display:flex; gap:12px; align-items:flex-start; padding:11px 0; border-top:1px solid var(--line); font-size:13.5px; color:var(--muted); line-height:1.4; cursor:pointer; min-height:44px}
+.chk input{width:20px; height:20px; margin-top:0; accent-color:var(--steel); flex-shrink:0}
+.rh-msg{font-size:12.5px; color:var(--muted); line-height:1.5; margin:8px 0 2px}
+.rh-msg.ok{color:var(--ok)}
+.rh-link{background:none; border:none; color:var(--faint); font-family:'Hanken Grotesk',sans-serif; font-size:12.5px; text-decoration:underline; padding:14px 0 2px; cursor:pointer; width:100%; text-align:center}
+.am-btn:disabled{opacity:.4; cursor:default}
+.am-card.ret{border-color:rgba(240,194,62,.4)}
+.dbtn.rehab .t{color:var(--steel)}
+.pain-card{background:var(--panel); border:1px solid var(--line); border-radius:15px; padding:15px; margin-bottom:11px}
+.pain-card .pn-t{font-family:'Oswald',sans-serif; font-weight:600; font-size:16px}
+.pain-card .pn-d{color:var(--faint); font-size:12px; margin:2px 0 10px}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important; transition:none!important}}
+
 @keyframes rise{from{opacity:0; transform:translateY(9px)}to{opacity:1; transform:none}}
 .pane{display:none} .pane.on{display:block}
 </style>
@@ -185,7 +205,7 @@ body::after{
     <div class="hdr-in">
       <div class="brand">
         <h1>Dad Athlete</h1>
-        <span class="v">V3.9.1</span>
+        <span class="v">V3.9.2</span>
         <span class="sub">Superman Build</span>
       </div>
       <nav class="tabs">
@@ -304,6 +324,204 @@ const AM_MOBILITY = [
   {n:'Band Pass-Through', d:'Wide grip, straight arms, front to back over the head.', t:'60 sec'},
   {n:'Deep Squat Hold + Reach', d:'Heels down, chest up, rotate and reach overhead each side.', t:'60 sec'},
 ];
+/* ---------- REHAB MODE (adductor magnus strain) ---------- */
+const AM_MOBILITY_REHAB = [
+  {n:'Ankle Rock', d:'Knee-to-wall, both sides. Heel stays down.', t:'45 sec'},
+  {n:'Cat-Cow to Thread the Needle', d:'Slow, both sides on the thread.', t:'60 sec'},
+  {n:'Band Pass-Through', d:'Wide grip, straight arms, front to back over the head.', t:'60 sec'},
+  {n:'Thoracic Rotation', d:'Quadruped, both sides.', t:'60 sec'},
+  {n:'Half-Kneeling Hip Flexor', d:'Small range, hips square. Stop before the inner thigh pulls.', t:'45 sec'},
+];
+const RECOVERY_REHAB_WED = [
+  {n:'Dead Hang', d:'Full passive hang. Let the spine lengthen.', t:'60 sec'},
+  {n:'Cat-Cow', d:'10 slow reps, full control at each end.', t:'1 min'},
+  {n:'Thoracic Rotation', d:'Quadruped, both sides.', t:'2 min'},
+];
+
+const RX = Object.fromEntries([
+  {id:'rh_sq_bent', name:'Pillow Squeeze, knees bent', sr:'5 × 30 sec', u1:'%', p1:'% effort', u2:'sec', p2:'sec',
+   note:'On your back, knees bent, pillow between them. Squeeze at 40–50% effort and breathe. Stay at 3/10 or less. Repeat once or twice a day at home.'},
+  {id:'rh_sq_str', name:'Pillow Squeeze, legs straight', sr:'3 × 30 sec', u1:'%', p1:'% effort', u2:'sec', p2:'sec',
+   note:'Longer lever, harder than bent knees. Start at 50% effort.'},
+  {id:'rh_bridge2', name:'Glute Bridge, two legs', sr:'3 × 10',
+   note:'Feet hip-width, drive through the heels, 2-sec hold at the top. Stop if the back of the inner thigh pulls.'},
+  {id:'rh_bridge1', name:'Single-Leg Bridge', sr:'3 × 8 / leg',
+   note:'Keep hips level. 2-sec hold at the top.'},
+  {id:'rh_adduct', name:'Side-Lying Hip Adduction', sr:'3 × 10–12 / leg',
+   note:'Bottom leg straight, top leg bent with the foot on the floor in front. Lift the bottom leg, 3-sec lower.'},
+  {id:'rh_rackpull', name:'Rack Pull, below knee', sr:'3 × 5',
+   note:'Bar on pins just below the knee, narrow conventional stance. Start near 50% of your usual deadlift and add about 10% a session while it stays at 2/10 or less. Not a benchmark.'},
+  {id:'rh_boxsq', name:'Box Squat, above your pain', sr:'3 × 6–8',
+   note:'Goblet hold, 12.5kg. Set the box just above where it tugs and drop it a notch each session while it stays at 2/10 or less.'},
+  {id:'rh_rdl_short', name:'Romanian Deadlift, short range', sr:'3 × 8',
+   note:'Bar to just below the knee, no deeper. About 50–60% of your usual RDL load.'},
+  {id:'rh_fsq', name:'Front Squat, reload', sr:'3 × 5',
+   note:'60–70% of your last working weight. Go to full depth only if it stays pain-free. Not tracked as a benchmark.'},
+  {id:'rh_dl', name:'Deadlift, reload', sr:'3 × 5',
+   note:'70% of your last working weight, narrow conventional stance. Not tracked as a benchmark.'},
+  {id:'rh_row', name:'Chest-Supported DB Row', sr:'3 × 10–15',
+   note:'Incline bench, 12.5kg, slow lower, squeeze at the top. Skip it if your shoulder rehab already covers rows.'},
+  {id:'rh_pullapart', name:'Band Pull-Apart', sr:'3 × 15–20',
+   note:'Straight arms, pull the band to your chest.'},
+  {id:'rh_deadbug', name:'Dead Bug', sr:'3 × 8 / side',
+   note:'Keep the heel slides short so the inner thigh does not tug.'},
+  {id:'rh_sideplank', name:'Side Plank', sr:'3 × 25 sec / side', u2:'sec', p2:'sec',
+   note:'Knees bent if it tugs.'},
+].map(e=>[e.id,e]));
+
+const HIP_THR_REHAB = {note:'Narrow stance, moderate load. 2-sec hold at the top. Stop if the back of the inner thigh pulls.'};
+const REHAB = [
+  {n:1, name:'Calm it down', goal:'Isometric squeezes only. Pain settles and the muscle stays switched on. Do them at home once or twice a day too.',
+   gate:['Bent-knee squeeze at 50% is 2/10 or less','Walking and sitting are 2/10 or less','No flare the morning after, two sessions in a row'],
+   main:['rh_sq_bent']},
+  {n:2, name:'Add the bridge', goal:'Squeezes get firmer, and the hamstring side of the muscle starts working.',
+   gate:['Bent-knee squeeze at 70% is 2/10 or less','Two-leg bridge, 3 × 10, is 2/10 or less','Straight-leg squeeze at 50% is 2/10 or less','No flare the morning after'],
+   main:[['rh_sq_bent',{sr:'5 × 30–45 sec', note:'Same position, up to about 70% effort. Stay at 3/10 or less.'}],'rh_bridge2']},
+  {n:3, name:'Strengthen', goal:'Longer levers and one-leg work to build the strength back.',
+   gate:['Straight-leg squeeze at 70% is 2/10 or less','Single-leg bridge, 3 × 8, is 2/10 or less','Side-lying adduction, 3 × 12, is 2/10 or less','Sitting on a hard chair is comfortable','No flare the morning after'],
+   main:['rh_sq_str','rh_bridge1','rh_adduct']},
+  {n:4, name:'Light hinge', goal:'The first hinge under load, kept short and light.',
+   gate:['Rack pull at about 70% is 2/10 or less','Hip thrust at your normal load is 2/10 or less','Bodyweight squat to full depth is 2/10 or less','No flare the morning after'],
+   main:['rh_adduct','rh_rackpull',['hip_thr',HIP_THR_REHAB]]},
+  {n:5, name:'Squat back', goal:'Squat depth comes back a notch at a time.',
+   gate:['Box squat to full depth is 2/10 or less','Short-range RDL at about 60% is 2/10 or less','Squeeze at full effort is 2/10 or less','No flare the morning after'],
+   main:['rh_boxsq','rh_rdl_short','rh_adduct',['hip_thr',HIP_THR_REHAB]]},
+  {n:6, name:'Reload', goal:'Front squat and deadlift return at about 70%. Finishing this phase puts the normal programme back.',
+   gate:['Front squat at 70%, full depth, is 2/10 or less','Deadlift at 70% is 2/10 or less','Squeeze, bridge and walking are pain-free','No flare the morning after, two sessions in a row'],
+   main:['rh_adduct'],
+   A:['rh_fsq',['rh_rdl_short',{name:'Romanian Deadlift, reload', note:'About 70% of your usual load, normal range if it stays pain-free.'}]],
+   B:['rh_dl',['hip_thr',{note:'Normal stance, about 80% load. 2-sec hold at the top.'}]]},
+];
+
+function exDef(id){
+  for(const d of P) for(const b of d.blocks) for(const e of b.ex) if(e.id===id) return e;
+  return RX[id];
+}
+const RKEY='da3rehab';
+function rs(){ try{ return JSON.parse(localStorage.getItem(RKEY))||{}; }catch(e){ return {}; } }
+function rsSave(o){ localStorage.setItem(RKEY, JSON.stringify(o)); }
+function rehabOn(){ return !!rs().on; }
+function isLowerId(id){ return id==='d2'||id==='d4'; }
+function daysBetween(a,b){ return Math.round((new Date(b+'T00:00')-new Date(a+'T00:00'))/86400000); }
+function refreshAll(){ renderNav(); renderDay(); renderNotes(); }
+
+function rehabStart(){
+  rsSave({on:true, start:todayStr(), phase:1, gate:{}, ended:null});
+  refreshAll();
+}
+function rehabFinish(){
+  const s=rs(); s.on=false; s.ended=todayStr(); rsSave(s);
+  refreshAll();
+}
+function rehabExit(){
+  if(!confirm('Exit rehab mode? The normal programme returns now, with a back-off week on the lower days.')) return;
+  rehabFinish();
+}
+function rehabAdvance(){
+  const s=rs();
+  if(s.phase>=REHAB.length){ rehabFinish(); return; }
+  s.phase++; rsSave(s); renderDay();
+}
+function rehabBack(){
+  const s=rs(); if(s.phase<=1) return;
+  if(!confirm('Drop back to phase '+(s.phase-1)+'? The ticks for this phase reset.')) return;
+  s.gate=s.gate||{}; s.gate[s.phase]=[]; s.phase--; s.gate[s.phase]=[]; rsSave(s); renderDay();
+}
+function gateTick(i,el){
+  const s=rs(); s.gate=s.gate||{};
+  const arr=s.gate[s.phase]||[]; arr[i]=el.checked; s.gate[s.phase]=arr; rsSave(s);
+  const ok=REHAB[s.phase-1].gate.every((_,k)=>arr[k]);
+  const b=document.getElementById('rhAdv'); if(b) b.disabled=!ok;
+}
+const rdyKey=()=>`${RKEY}_rdy_${todayStr()}`;
+function rdyState(){
+  let a=[]; try{ a=JSON.parse(localStorage.getItem(rdyKey()))||[]; }catch(e){}
+  return [!!a[0],!!a[1],!!a[2]];
+}
+function readyMsg(ok){
+  return ok ? "Cleared. Run today's rehab work."
+            : 'Tick all three to run the full session. If one fails, do the calves and core only and test again tomorrow.';
+}
+function rdyTick(i,el){
+  const a=rdyState(); a[i]=el.checked; localStorage.setItem(rdyKey(), JSON.stringify(a));
+  const ok=a[0]&&a[1]&&a[2];
+  const m=document.getElementById('rhReady');
+  if(m){ m.textContent=readyMsg(ok); m.classList.toggle('ok',ok); }
+}
+
+function rehabCard(){
+  const s=rs(); const n=s.phase||1; const ph=REHAB[n-1];
+  const dayN=daysBetween(s.start,todayStr())+1;
+  const gate=(s.gate&&s.gate[n])||[];
+  const rdy=rdyState(); const allRdy=rdy[0]&&rdy[1]&&rdy[2];
+  const RD=['Pillow squeeze at 50% is 2/10 or less','Glute bridge, 30-sec hold, is 2/10 or less','Walking and sitting are comfortable'];
+  const chk=(txt,on,fn,i)=>`<label class="chk"><input type="checkbox" ${on?'checked':''} onchange="${fn}(${i},this)"><span>${txt}</span></label>`;
+  const allGate=ph.gate.every((_,i)=>gate[i]);
+  const last=n===REHAB.length;
+  return `<div class="am-card rh open" id="rhCard">
+    <div class="am-head" onclick="document.getElementById('rhCard').classList.toggle('open')">
+      <div class="an">Rehab mode · Phase ${n} of ${REHAB.length}</div><div class="at">DAY ${dayN}</div><div class="ar">›</div>
+    </div>
+    <div class="am-body">
+      <p class="rh-p"><b>${ph.name}.</b> ${ph.goal}</p>
+      <div class="rh-sub">Before you lift today</div>
+      ${RD.map((t,i)=>chk(t,rdy[i],'rdyTick',i)).join('')}
+      <div class="rh-msg${allRdy?' ok':''}" id="rhReady">${readyMsg(allRdy)}</div>
+      <div class="rh-sub">${last?'Finish rehab when':'Move to phase '+(n+1)+' when'}</div>
+      ${ph.gate.map((t,i)=>chk(t,gate[i],'gateTick',i)).join('')}
+      <button class="am-btn am-full" id="rhAdv" ${allGate?'':'disabled'} onclick="rehabAdvance()">${last?'Finish rehab · back to normal programme':'Move to phase '+(n+1)}</button>
+      ${n>1?'<button class="rh-link" onclick="rehabBack()">Flare-up? Drop back a phase</button>':''}
+    </div></div>`;
+}
+
+function rehabDay(base){
+  const s=rs(); const ph=REHAB[(s.phase||1)-1];
+  const get=it=>{
+    const id=Array.isArray(it)?it[0]:it; const ov=Array.isArray(it)?it[1]:{};
+    return Object.assign({}, exDef(id), ov, {bench:false});
+  };
+  const isA=base.id==='d2';
+  const extra=(isA?ph.A:ph.B)||[];
+  const blocks=[{tag:`Phase ${ph.n} · ${ph.name}`, ex:[...ph.main,...extra].map(get)}];
+  if(isA){
+    blocks.push({tag:'Calves + core', ex:['calf_std',['hlr',{note:'Drop it if it tugs the inner thigh. No swing.'}]].map(get)});
+    blocks.push({tag:'Optional · upper back + core', ex:['rh_row','rh_pullapart','rh_deadbug','rh_sideplank'].map(get)});
+  } else {
+    blocks.push({tag:'Calves', ex:['calf_sl'].map(get)});
+    blocks.push({tag:'Carry + core · this is the conditioning', ss:true,
+      ex:[['farmer',{note:'Moderate load, normal stride, rigid torso. Stop if the inner thigh tugs.'}],'pallof'].map(get)});
+  }
+  return {id:'rehab', day:base.day, name:base.name, focus:`Rehab phase ${ph.n} · ${ph.name}`, blocks};
+}
+
+function returnWeek(){
+  const s=rs(); if(s.on||!s.ended) return false;
+  const d=daysBetween(s.ended,todayStr());
+  return d>=0 && d<=7;
+}
+function returnBanner(base){
+  const lift = base.id==='d2' ? {id:'front_sq',n:'Front Squat'} : {id:'deadlift',n:'Deadlift'};
+  let line='';
+  const last=lastSession(base.id, lift.id, '9999-12-31');
+  if(last){
+    const ws=last.sets.map(x=>parseFloat(x[0])).filter(x=>!isNaN(x)&&x>0);
+    if(ws.length){
+      const top=Math.max(...ws); const r=p=>Math.round((top*p/100)/2.5)*2.5;
+      line=` Last working weight ${top}kg, so ${r(70)}–${r(80)}kg.`;
+    }
+  }
+  return `<div class="am-card ret"><div class="am-head" style="cursor:default"><div class="an">Return week</div><div class="ac" style="color:var(--gold)">BACK-OFF</div></div><div class="am-body" style="display:block"><p style="color:var(--muted);font-size:13px;line-height:1.5">${lift.n} at 70–80% of your last working weight, 3 × 5, clean reps, no PR attempts.${line} Everything else on the day at about 80%, and Bulgarian split squats last, since they load the inner thigh most. Progression prompts are off until the week is over.</p></div></div>`;
+}
+
+function rehabControl(){
+  const s=rs();
+  const fmt=d=>new Date(d+'T00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+  if(s.on){
+    return `<div class="note"><h3 class="gold">Rehab mode is on</h3><p><b>Phase ${s.phase} of ${REHAB.length}</b>, started ${fmt(s.start)}. Lower A and Lower B are swapped for the rehab plan, Front Squat and Deadlift tracking is paused, and AM Mobility skips anything that loads the inner thigh. Upper days are unchanged.</p><button class="am-btn am-full" style="margin-top:10px" onclick="rehabExit()">Exit rehab mode</button></div>`;
+  }
+  return `<div class="note"><h3 class="gold">Rehab mode</h3><p>For the adductor strain. Swaps Lower A and Lower B for a six-phase plan that you move through by ticking off pain checks, not by the calendar. Front Squat and Deadlift tracking pauses, AM Mobility drops anything that loads the inner thigh, and finishing the last phase puts the normal programme back with a back-off week.${s.ended?' Last rehab finished '+fmt(s.ended)+'.':''}</p><button class="am-btn am-full" style="margin-top:10px" onclick="rehabStart()">Start rehab mode</button></div>`;
+}
+
 const SETS_FOR = sr => { const m = sr.match(/^(\d+)/); return m ? +m[1] : 3; };
 const KEY = 'da3';
 const todayStr = () => new Date().toISOString().split('T')[0];
@@ -326,13 +544,14 @@ let activeDay = null;
 function renderNav(){
   const wd = new Date().getDay();
   const nav = document.getElementById('daynav'); nav.innerHTML='';
-  const items = [...P.map(d=>({id:d.id,d:d.day.replace('Day ','D'),t:d.name,wd:d.weekday})),
+  const rhOn=rehabOn();
+  const items = [...P.map(d=>({id:d.id,d:d.day.replace('Day ','D'),t:(rhOn&&isLowerId(d.id))?('Rehab '+(d.id==='d2'?'A':'B')):d.name,wd:d.weekday,rh:rhOn&&isLowerId(d.id)})),
                  {id:'wed',d:'Wed',t:'Recover',wd:3},{id:'sat',d:'Sat',t:'Dad Walk',wd:6}];
   let pick = items.find(i=>i.wd===wd);
   if(!activeDay) activeDay = pick ? pick.id : 'd1';
   items.forEach(i=>{
     const b=document.createElement('button');
-    b.className='dbtn'+(i.id===activeDay?' on':'')+(i.wd===wd?' today':'');
+    b.className='dbtn'+(i.id===activeDay?' on':'')+(i.wd===wd?' today':'')+(i.rh?' rehab':'');
     b.innerHTML=`<div class="d">${i.d}</div><div class="t">${i.t}</div>`;
     b.onclick=()=>{ activeDay=i.id; renderNav(); renderDay(); window.scrollTo(0,0); };
     nav.appendChild(b);
@@ -383,7 +602,7 @@ function renderAMMobility(){
   const date=todayStr();
   const done = localStorage.getItem(`${KEY}_mob_${date}`)==='1';
   let rows='';
-  AM_MOBILITY.forEach(it=>{ rows+=`<div class="mob-row"><div><div class="mn">${it.n}</div><div class="md">${it.d}</div></div><div class="mt">${it.t}</div></div>`; });
+  (rehabOn()?AM_MOBILITY_REHAB:AM_MOBILITY).forEach(it=>{ rows+=`<div class="mob-row"><div><div class="mn">${it.n}</div><div class="md">${it.d}</div></div><div class="mt">${it.t}</div></div>`; });
   return `<div class="am-card${done?' done':' open'}" id="amCard">
     <div class="am-head" onclick="document.getElementById('amCard').classList.toggle('open')">
       <div class="an">AM Mobility</div>
@@ -438,14 +657,18 @@ function progressCheck(ex,dayId,date){
 function renderDay(){
   const c=document.getElementById('dayContent');
   if(activeDay==='wed'||activeDay==='sat'){ renderRecovery(activeDay); return; }
-  const day=P.find(d=>d.id===activeDay);
+  const baseDay=P.find(d=>d.id===activeDay);
+  const rh=isLowerId(baseDay.id)&&rehabOn();
+  const retWk=isLowerId(baseDay.id)&&!rh&&returnWeek();
+  const day=rh?rehabDay(baseDay):baseDay;
   const date=todayStr();
   let saved={};
   try{ saved=JSON.parse(localStorage.getItem(sKey(day.id,date)))||{}; }catch(e){}
 
   let h=`<div class="dayhead"><div class="lbl">${day.day} · ${day.focus.split('·')[0].trim()}</div>
     <h2>${day.name}</h2><div class="foc">${day.focus}</div></div>`;
-  h+=deloadBanner();
+  h+= rh ? rehabCard() : deloadBanner();
+  if(retWk) h+=returnBanner(baseDay);
   h+=`<div style="color:var(--muted);font-size:12.5px;line-height:1.5;margin:-6px 0 14px;padding:0 2px">60–90 sec light movement first — jog on the spot, jumping jacks, anything — before AM Mobility below. 0500 means you're lifting cold; raise body temp before the ramp, not after.</div>`;
   h+=renderAMMobility();
   let delay=0;
@@ -459,14 +682,15 @@ function renderDay(){
       let rows='';
       for(let i=0;i<nSets;i++){
         const w=(cur[i]&&cur[i][0])||''; const r=(cur[i]&&cur[i][1])||'';
-        const u1=ex.carry?'kg':'kg'; const u2=ex.carry?'m':'reps';
+        const u1=ex.u1||'kg'; const u2=ex.u2||(ex.carry?'m':'reps');
         rows+=`<div class="setrow"><div class="n">${i+1}</div>
-          <div class="fld"><input type="number" inputmode="decimal" data-ex="${ex.id}" data-set="${i}" data-f="0" value="${w}" placeholder="${ex.carry?'load':'kg'}"><span class="u">${u1}</span></div>
-          <div class="fld"><input type="number" inputmode="numeric" data-ex="${ex.id}" data-set="${i}" data-f="1" value="${r}" placeholder="${u2}"><span class="u">${u2}</span></div>
+          <div class="fld"><input type="number" inputmode="decimal" data-ex="${ex.id}" data-set="${i}" data-f="0" value="${w}" placeholder="${ex.p1||(ex.carry?'load':'kg')}"><span class="u">${u1}</span></div>
+          <div class="fld"><input type="number" inputmode="numeric" data-ex="${ex.id}" data-set="${i}" data-f="1" value="${r}" placeholder="${ex.p2||u2}"><span class="u">${u2}</span></div>
         </div>`;
       }
-      const prog=progressCheck(ex,day.id,date);
-      const ramp=warmupRamp(ex,day.id,date);
+      const noProg=rh||retWk;
+      const prog=noProg?null:progressCheck(ex,day.id,date);
+      const ramp=rh?null:warmupRamp(ex,day.id,date);
       h+=`<div class="ex ${ex.bench?'bench':''}" style="animation-delay:${delay}s">
         <div class="ex-top">
           <div class="ex-name">${ex.name}${ex.bench?' <span class="star">★</span>':''}</div>
@@ -481,6 +705,10 @@ function renderDay(){
       delay+=.03;
     });
   });
+  if(rh){
+    const pv=(saved.pain&&saved.pain[0]&&saved.pain[0][1])||'';
+    h+=`<div class="pain-card"><div class="pn-t">Pain after the session</div><div class="pn-d">0 to 10. Log it before you leave the gym.</div><div class="fld"><input type="number" inputmode="numeric" min="0" max="10" data-ex="pain" data-set="0" data-f="1" value="${pv}" placeholder="0–10"></div></div>`;
+  }
   h+=`<div class="saved" id="savedMsg">Session logged ✓</div>
       <div class="savebar"><button class="savebtn" onclick="saveDay('${day.id}')">Log Session</button></div>`;
   c.innerHTML=h;
@@ -493,9 +721,10 @@ function renderRecovery(which){
   h+=deloadBanner();
   h+=renderAMMobility();
   h+=`<div class="rest-card"><h3>${r.title.split('—')[0].trim()}</h3><p>${r.sub}</p></div>`;
-  if(r.items.length){
+  const items=(which==='wed'&&rehabOn())?RECOVERY_REHAB_WED:r.items;
+  if(items.length){
     h+=`<div class="rest-card">`;
-    r.items.forEach(it=>{ h+=`<div class="mob-row"><div><div class="mn">${it.n}</div><div class="md">${it.d}</div></div><div class="mt">${it.t}</div></div>`; });
+    items.forEach(it=>{ h+=`<div class="mob-row"><div><div class="mn">${it.n}</div><div class="md">${it.d}</div></div><div class="mt">${it.t}</div></div>`; });
     h+=`</div>`;
   }
   c.innerHTML=h;
@@ -517,7 +746,7 @@ function saveDay(dayId){
 }
 
 /* ---------- HISTORY ---------- */
-function exName(id){ for(const d of P) for(const b of d.blocks) for(const e of b.ex) if(e.id===id) return e.name; return id; }
+function exName(id){ const e=exDef(id); return e?e.name:id; }
 function renderHistory(){
   const c=document.getElementById('histContent');
   let entries=[];
@@ -525,7 +754,7 @@ function renderHistory(){
     const k=localStorage.key(i);
     if(k.startsWith(KEY+'_')){
       const parts=k.split('_'); const date=parts.pop(); const dayId=parts.slice(1).join('_');
-      const day=P.find(d=>d.id===dayId); if(!day) continue;
+      const day=dayId==='rehab'?{name:'Rehab'}:P.find(d=>d.id===dayId); if(!day) continue;
       try{ const data=JSON.parse(localStorage.getItem(k)); entries.push({date,dayId,name:day.name,data}); }catch(e){}
     }
   }
@@ -535,6 +764,7 @@ function renderHistory(){
   entries.forEach((e,idx)=>{
     let rows='';
     for(const exId in e.data){
+      if(exId==='pain'){ const pv=e.data.pain&&e.data.pain[0]&&e.data.pain[0][1]; if(pv) rows+=`<div class="hist-ex"><div class="hx">Pain after session</div><div class="hv">${pv}/10</div></div>`; continue; }
       const f=fmtSets(e.data[exId]); if(!f) continue;
       rows+=`<div class="hist-ex"><div class="hx">${exName(exId)}</div><div class="hv">${f}</div></div>`;
     }
@@ -587,6 +817,7 @@ function renderBench(){
     } else {
       h+=`<div class="bm-none">Log this lift twice to see the trend.</div>`;
     }
+    if(rehabOn()&&(id==='front_sq'||id==='deadlift')) h+=`<div class="bm-none" style="margin-top:8px">Paused during rehab. Resumes at 70–80% on return.</div>`;
     h+=`</div>`;
   });
   c.innerHTML=h;
@@ -625,7 +856,9 @@ function renderVitals(){
     } else if(pts.length===1){
       h+=`<div class="bm-none">Log it again next time to see the trend.</div>`;
     }
-    h+=`<div class="vital-log"><div class="fld"><input type="number" inputmode="decimal" id="vin_${v.id}" placeholder="${v.unit}"></div>
+    h+= (v.id==='deep_squat'&&rehabOn())
+      ? `<div class="bm-none" style="margin-top:10px">Skipped during rehab mode.</div>`
+      : `<div class="vital-log"><div class="fld"><input type="number" inputmode="decimal" id="vin_${v.id}" placeholder="${v.unit}"></div>
       <button class="am-btn" onclick="saveVital('${v.id}')">Log</button></div>`;
     h+=`</div>`;
   });
@@ -643,6 +876,7 @@ function saveVital(id){
 function renderNotes(){
   document.getElementById('notesContent').innerHTML=`
   <div class="dayhead"><div class="lbl">The Why</div><h2>Doctrine</h2><div class="foc">Read this when you're tempted to add something.</div></div>
+  ${rehabControl()}
   <div class="note"><h3>The One Goal</h3><p>The build in the reference: <b>broad delts, full upper chest, a clean V-taper to a lean waist</b>, at roughly 10–12% body fat. It's a proportions-and-leanness look, not a mass look. Most of the effect is shoulder width over a tight midsection.</p></div>
   <div class="note"><h3>The Four-Principle Test</h3>
     <div class="principle"><div class="pn">1</div><div class="pt">Does it serve <b>the build</b>?</div></div>
